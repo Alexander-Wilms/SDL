@@ -81,7 +81,14 @@ int main(int, char**){
 			shooting = false;
 		}
 
-		for (std::vector<SDL_Rect>::iterator it = bullet_vector.begin() ; it != bullet_vector.end(); ++it) {
+		SDL_Rect window_borders;
+		window_borders.x = 0;
+		window_borders.y = 0;
+		window_borders.h = 500;
+		window_borders.w = 500;
+
+		// http://stackoverflow.com/questions/10957531/c-vector-iterator-erase-last-item-crash
+		for (std::vector<SDL_Rect>::iterator it = bullet_vector.begin() ; it != bullet_vector.end(); /* nothing */) {
 			SDL_RenderCopy(renderer, texture, NULL, it.base());
 			it.base()->y--;
 
@@ -89,6 +96,14 @@ int main(int, char**){
 				collided = true;
 				std::cout << "Hit!" << std::endl;
 			}
+
+			if(SDL_HasIntersection(&window_borders, it.base()) == SDL_FALSE) {
+				it = bullet_vector.erase(it);
+			} else {
+				it++;
+			}
+
+			std::cout << bullet_vector.size() << std::endl;
 		}
 
 		if(enemy.x > 500-1-50) {
@@ -108,8 +123,6 @@ int main(int, char**){
 		enemy.x = enemyPos;
 
 		SDL_RenderCopy(renderer, texture, NULL, &actor);
-
-
 
 		if(!collided)
 			SDL_RenderCopy(renderer, texture, NULL, &enemy);
