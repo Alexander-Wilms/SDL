@@ -2,7 +2,10 @@
 
 #include <iostream>
 #include <SDL.h>
+#include <vector>
 #include "SDL_image.h"
+
+using std::vector;
 
 int main(int, char**){
 
@@ -24,9 +27,9 @@ int main(int, char**){
 	actor.w = 100;
 	actor.h = 100;
 
-	SDL_Rect bullet = SDL_Rect();
-	bullet.w = 10;
-	bullet.h = 10;
+
+
+	vector<SDL_Rect> bullet_vector;
 
 	SDL_Rect enemy = SDL_Rect();
 	enemy.w = 50;
@@ -46,7 +49,7 @@ int main(int, char**){
 
 	SDL_RenderCopy(renderer, texture, NULL, &actor);
 
-	SDL_RenderCopy(renderer, texture, NULL, &bullet);
+	//SDL_RenderCopy(renderer, texture, NULL, &bullet);
 
 	SDL_RenderCopy(renderer, texture, NULL, &enemy);
 
@@ -67,12 +70,26 @@ int main(int, char**){
 		actor.y = y;
 
 		if(shooting == true) {
-			shooting = false;
+			SDL_Rect bullet = SDL_Rect();
+			bullet.w = 10;
+			bullet.h = 10;
 			bullet.x = x+50;
 			bullet.y = 500-100;
+
+			bullet_vector.push_back(bullet);
+
+			shooting = false;
 		}
 
-		bullet.y--;
+		for (std::vector<SDL_Rect>::iterator it = bullet_vector.begin() ; it != bullet_vector.end(); ++it) {
+			SDL_RenderCopy(renderer, texture, NULL, it.base());
+			it.base()->y--;
+
+			if(SDL_HasIntersection(&enemy, it.base()) == SDL_TRUE) {
+				collided = true;
+				std::cout << "Hit!" << std::endl;
+			}
+		}
 
 		if(enemy.x > 500-1-50) {
 			enemyDir = false;
@@ -92,15 +109,15 @@ int main(int, char**){
 
 		SDL_RenderCopy(renderer, texture, NULL, &actor);
 
-		SDL_RenderCopy(renderer, texture, NULL, &bullet);
+
 
 		if(!collided)
 			SDL_RenderCopy(renderer, texture, NULL, &enemy);
 
-		if(SDL_HasIntersection(&enemy, &bullet) == SDL_TRUE) {
+		/*if(SDL_HasIntersection(&enemy, &bullet) == SDL_TRUE) {
 			collided = true;
 			std::cout << "Hit!" << std::endl;
-		}
+		}*/
 
 		SDL_RenderPresent(renderer);
 
@@ -116,13 +133,13 @@ int main(int, char**){
 			if( event.type == SDL_QUIT ) {
 				SDL_DestroyTexture(texture);
 
-					SDL_DestroyRenderer(renderer);
+				SDL_DestroyRenderer(renderer);
 
-					SDL_DestroyWindow(window);
+				SDL_DestroyWindow(window);
 
-					SDL_Quit();
+				SDL_Quit();
 
-					running = false;
+				running = false;
 			} else if(event.type == SDL_KEYDOWN) {
 				switch(event.key.keysym.sym) {
 				case SDLK_RIGHT:
