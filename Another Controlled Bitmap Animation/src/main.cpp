@@ -32,10 +32,8 @@ int main(int, char**){
 
 	bool direction = true;
 
-	bool moving = false;
-
 	while(running) {
-		SDL_Delay(5);
+		SDL_Delay(100);
 
 		SDL_RenderClear(renderer);
 
@@ -46,12 +44,12 @@ int main(int, char**){
 
 		SDL_RenderPresent(renderer);
 
-		if(moving) {
-			if(direction) {
-				x++;
-			} else {
-				x--;
-			}
+		if(direction) {
+			x++;
+			y++;
+		} else {
+			x--;
+			y--;
 		}
 
 		while( SDL_PollEvent( &event ) ) {
@@ -66,17 +64,7 @@ int main(int, char**){
 
 					running = false;
 			} else if(event.type == SDL_KEYDOWN) {
-				switch(event.key.keysym.sym) {
-				case SDLK_RIGHT:
-					moving = true;
-					direction = true;
-					break;
-				case SDLK_LEFT:
-					moving = true;
-					direction = false;
-				}
-			} else if(event.type == SDL_KEYUP) {
-				moving = false;
+				direction = !direction;
 			}
 		}
 	}
