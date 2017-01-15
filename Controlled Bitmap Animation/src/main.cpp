@@ -28,10 +28,11 @@ int main(int, char**){
 	bullet.w = 10;
 	bullet.h = 10;
 
+	SDL_Rect enemy = SDL_Rect();
+	enemy.w = 50;
+	enemy.h = 50;
 
-
-
-	int x = 50, y = 50;
+	int x = 50, y = 500-100;
 
 	SDL_Event event;
 
@@ -47,6 +48,16 @@ int main(int, char**){
 
 	SDL_RenderCopy(renderer, texture, NULL, &bullet);
 
+	SDL_RenderCopy(renderer, texture, NULL, &enemy);
+
+	int enemyPos = 250;
+	enemy.x = enemyPos;
+	enemy.y = 50;
+
+	bool enemyDir = true;
+
+	bool collided = false;
+
 	while(running) {
 		SDL_Delay(5);
 
@@ -58,16 +69,38 @@ int main(int, char**){
 		if(shooting == true) {
 			shooting = false;
 			bullet.x = x+50;
-			bullet.y = 50;
+			bullet.y = 500-100;
 		}
 
 		bullet.y--;
+
+		if(enemy.x > 500-1-50) {
+			enemyDir = false;
+		}
+
+		if(enemy.x < 0) {
+			enemyDir = true;
+		}
+
+		if(enemyDir) {
+			enemyPos++;
+		} else {
+			enemyPos--;
+		}
+
+		enemy.x = enemyPos;
 
 		SDL_RenderCopy(renderer, texture, NULL, &actor);
 
 		SDL_RenderCopy(renderer, texture, NULL, &bullet);
 
-		//SDL_RenderDrawRect(renderer, &bullet);
+		if(!collided)
+			SDL_RenderCopy(renderer, texture, NULL, &enemy);
+
+		if(SDL_HasIntersection(&enemy, &bullet) == SDL_TRUE) {
+			collided = true;
+			std::cout << "Hit!" << std::endl;
+		}
 
 		SDL_RenderPresent(renderer);
 
