@@ -7,8 +7,6 @@
 #include <SDL.h>
 #include "Display.h"
 
-void initRand();
-
 #define SIZE 500
 
 using std::cout;
@@ -38,47 +36,32 @@ bool blinker[3][3] = {
 int a, b, c, d;
 
 void run();
-
+void initRand();
 void computeNextStep();
-
-void initPattern(bool glider2[][3], int width, int height);
-
 int min(int a, int b);
 int max(int a, int b);
+void initPattern(bool glider2[][3], int width, int height);
 
 Display display(SIZE);
-
 
 vector<vector<bool>> data(SIZE, vector<bool>(SIZE));
 vector<vector<bool>> dataOfNextStep(SIZE, vector<bool>(SIZE));
 
 int main(int argc, char *argv[]){
-
-	srand (time(NULL));
-
-	a = rand() % SIZE;
-	b = rand() % SIZE;
-	c = rand() % SIZE;
-	d = rand() % SIZE;
-
 	run();
-
 
 	return 0;
 }
 
-
-
 void run() {
-	for(int i = 0; i <SIZE; i++) {
+	for(int i = 0; i < SIZE; i++) {
 		for(int j = 0; j < SIZE; j++) {
 			data[i][j] = false;
 			dataOfNextStep[i][j] = false;
 		}
 	}
 
-	for(int i = 0; i < 1000; i++)
-		initRand();
+	initRand();
 
 	//initPattern(glider,3,3);
 
@@ -111,15 +94,15 @@ void run() {
 }
 
 void initRand() {
-	/*cout << min(a,b) << endl;
-	cout << max(a,b) << endl;
-	cout << min(c,d) << endl;
-	cout << max(c,d) << endl;*/
+	srand (time(NULL));
+
+	a = rand() % SIZE;
+	b = rand() % SIZE;
+	c = rand() % SIZE;
+	d = rand() % SIZE;
 
 	for(int i = min(a,b); i < max(a,b); i++) {
-
 		for(int j = min(c,d); j < max(c,d); j++) {
-
 			if(rand()%2) {
 				data[i][j] = true;
 			}
