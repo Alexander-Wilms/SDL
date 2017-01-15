@@ -20,9 +20,16 @@ int main(int, char**){
 
 	SDL_FreeSurface(surface);
 
-	SDL_Rect rect = SDL_Rect();
-	rect.w = 100;
-	rect.h = 100;
+	SDL_Rect actor = SDL_Rect();
+	actor.w = 100;
+	actor.h = 100;
+
+	SDL_Rect bullet = SDL_Rect();
+	bullet.w = 10;
+	bullet.h = 10;
+
+
+
 
 	int x = 50, y = 50;
 
@@ -34,15 +41,33 @@ int main(int, char**){
 
 	bool moving = false;
 
+	bool shooting = false;
+
+	SDL_RenderCopy(renderer, texture, NULL, &actor);
+
+	SDL_RenderCopy(renderer, texture, NULL, &bullet);
+
 	while(running) {
 		SDL_Delay(5);
 
 		SDL_RenderClear(renderer);
 
-		rect.x = x;
-		rect.y = y;
+		actor.x = x;
+		actor.y = y;
 
-		SDL_RenderCopy(renderer, texture, NULL, &rect);
+		if(shooting == true) {
+			shooting = false;
+			bullet.x = x+50;
+			bullet.y = 50;
+		}
+
+		bullet.y--;
+
+		SDL_RenderCopy(renderer, texture, NULL, &actor);
+
+		SDL_RenderCopy(renderer, texture, NULL, &bullet);
+
+		//SDL_RenderDrawRect(renderer, &bullet);
 
 		SDL_RenderPresent(renderer);
 
@@ -74,9 +99,21 @@ int main(int, char**){
 				case SDLK_LEFT:
 					moving = true;
 					direction = false;
+					break;
+				case SDLK_SPACE:
+					shooting = true;
 				}
 			} else if(event.type == SDL_KEYUP) {
-				moving = false;
+				switch(event.key.keysym.sym) {
+				case SDLK_RIGHT:
+					moving = false;
+					break;
+				case SDLK_LEFT:
+					moving = false;
+					break;
+				case SDLK_SPACE:
+					shooting = false;
+				}
 			}
 		}
 	}
