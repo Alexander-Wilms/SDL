@@ -1,13 +1,21 @@
 // https://wiki.libsdl.org/SDL_CreateRenderer
 
 #include <iostream>
+#include <cstdlib>
 #include <SDL.h>
 #include <vector>
+#include <random>
+#include <cmath>
 #include "SDL_image.h"
 
 using std::vector;
 
 int main(int, char**){
+
+	// needs C++11
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	std::uniform_real_distribution<double> dist(0, 2*M_PI);
 
 	SDL_Init(SDL_INIT_VIDEO);
 
@@ -27,9 +35,11 @@ int main(int, char**){
 	actor.w = 100;
 	actor.h = 100;
 
-
-
 	vector<SDL_Rect> bullet_vector;
+
+	vector<SDL_Rect> particle_vector;
+
+	vector<float> particle_direction_vector;
 
 	SDL_Rect enemy = SDL_Rect();
 	enemy.w = 50;
@@ -47,12 +57,6 @@ int main(int, char**){
 
 	bool shooting = false;
 
-	SDL_RenderCopy(renderer, texture, NULL, &actor);
-
-	//SDL_RenderCopy(renderer, texture, NULL, &bullet);
-
-	SDL_RenderCopy(renderer, texture, NULL, &enemy);
-
 	int enemyPos = 250;
 	enemy.x = enemyPos;
 	enemy.y = 50;
@@ -60,6 +64,10 @@ int main(int, char**){
 	bool enemyDir = true;
 
 	bool collided = false;
+
+	bool exploded = false;
+
+	int frames_since_collision = 0;
 
 	while(running) {
 		SDL_Delay(5);
@@ -106,31 +114,68 @@ int main(int, char**){
 			std::cout << bullet_vector.size() << std::endl;
 		}
 
-		if(enemy.x > 500-1-50) {
-			enemyDir = false;
-		}
+		if(!collided) {
+			if(enemy.x > 500-1-50) {
+				enemyDir = false;
+			}
 
-		if(enemy.x < 0) {
-			enemyDir = true;
-		}
+			if(enemy.x < 0) {
+				enemyDir = true;
+			}
 
-		if(enemyDir) {
-			enemyPos++;
-		} else {
-			enemyPos--;
-		}
+			if(enemyDir) {
+				enemyPos++;
+			} else {
+				enemyPos--;
+			}
 
-		enemy.x = enemyPos;
+			enemy.x = enemyPos;
+		}
 
 		SDL_RenderCopy(renderer, texture, NULL, &actor);
 
-		if(!collided)
+		if(!collided) {
 			SDL_RenderCopy(renderer, texture, NULL, &enemy);
+		} else {
 
-		/*if(SDL_HasIntersection(&enemy, &bullet) == SDL_TRUE) {
-			collided = true;
-			std::cout << "Hit!" << std::endl;
-		}*/
+			frames_since_collision++;
+
+			SDL_Rect particle = SDL_Rect();
+			particle.w = 10;
+			particle.h = 10;
+			particle.x = enemy.x;
+			particle.y = enemy.y;
+
+			for(int i = 0; i <10; i++) {
+				particle_vector.push_back(particle);
+				particle_direction_vector.push_back(dist(mt));
+			}
+
+if(!exploded) {
+	vector<float>::iterator iter = particle_direction_vector.begin();
+				for (vector<SDL_Rect>::iterator it = particle_vector.begin() ; it != particle_vector.end(); /* nothing */) {
+
+					it.base()->y = (int) ((float) it.base()->y +  sin((frames_since_collision)/120.*dist(mt)));
+					it.base()->x = (int) ((float) it.base()->x +  cos((frames_since_collision)/120.*dist(mt)));
+
+					SDL_RenderCopy(renderer, texture, NULL, it.base());
+
+					if(frames_since_collision > 120) {
+						it = particle_vector.erase(it);
+						particle_direction_vector.erase(iter);
+					} else {
+						it++;
+						iter++;
+					}
+				}}
+
+if(particle_vector.size() == 0)
+	exploded = true;
+
+
+
+
+		}
 
 		SDL_RenderPresent(renderer);
 
