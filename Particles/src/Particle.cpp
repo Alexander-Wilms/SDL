@@ -34,8 +34,8 @@ void Particle::render() {
 	realy = realy + delta_t / 1000 * y_velocity;
 
 	SDL_SetTextureAlphaMod(texture, (Uint8) alpha);
-	if (alpha >= 8)
-		alpha -= 8;
+	if (alpha >= 4)
+		alpha -= 4;
 	else
 		alpha = 0;
 
