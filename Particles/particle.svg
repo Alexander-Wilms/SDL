@@ -15,18 +15,21 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.0 r15299"
-   sodipodi:docname="particle.svg">
+   sodipodi:docname="particle.svg"
+   inkscape:export-filename="C:\Users\Alexander Wilms\Documents\Elektronik und Informatik\SDL\Particles\particle.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
   <defs
      id="defs2" />
   <sodipodi:namedview
      id="base"
-     pagecolor="#000000"
+     pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1.0"
      inkscape:pageopacity="1"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="17.143419"
+     inkscape:zoom="4"
+     inkscape:cx="-31.356581"
      inkscape:cy="3.6617135"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -45,7 +48,8 @@
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      showborder="true"
-     inkscape:showpageshadow="false">
+     inkscape:showpageshadow="false"
+     inkscape:pagecheckerboard="false">
     <inkscape:grid
        type="xygrid"
        id="grid4485"

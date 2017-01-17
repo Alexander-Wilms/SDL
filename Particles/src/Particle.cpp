@@ -3,9 +3,13 @@
 #include "Particle.h"
 #include <iostream>
 
-Particle::Particle(SDL_Renderer* renderer, int x, int y, double x_velocity, double y_velocity) {
+Particle::Particle(SDL_Renderer* renderer, int x, int y, double x_velocity,
+		double y_velocity, SDL_Surface* screen_surface) {
 	this->renderer = renderer;
-	surface = IMG_Load("particle.png");
+	this->screen_surface = screen_surface;
+	png_surface = IMG_Load("particle.png");
+	surface = SDL_ConvertSurfaceFormat(png_surface, SDL_PIXELFORMAT_ARGB8888,
+			0);
 	texture = SDL_CreateTextureFromSurface(renderer, surface);
 	rect.x = x;
 	realx = rect.x;
@@ -26,14 +30,21 @@ Particle::~Particle() {
 void Particle::render() {
 
 	float delta_t = SDL_GetTicks() - timestamp_creation;
-	realx = realx + delta_t/1000 * x_velocity;
-	realy = realy + delta_t/1000 * y_velocity;
-	if(delta_t/1000 > 0.5) {
-		SDL_SetTextureAlphaMod(texture, (Uint8) alpha);
-		if (alpha > 0)
-			alpha -= 0.25;
-	}
+	realx = realx + delta_t / 1000 * x_velocity;
+	realy = realy + delta_t / 1000 * y_velocity;
+
+	SDL_SetTextureAlphaMod(texture, (Uint8) alpha);
+	if (alpha >= 8)
+		alpha -= 8;
+	else
+		alpha = 0;
+
 	rect.x = (int) realx;
 	rect.y = (int) realy;
+
 	SDL_RenderCopy(renderer, texture, NULL, &rect);
+}
+
+SDL_Rect* Particle::getRect() {
+	return &rect;
 }

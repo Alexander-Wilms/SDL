@@ -2,9 +2,11 @@
 
 #include <iostream>
 #include <SDL.h>
+#include <SDL_image.h>
 #include <vector>
 #include "SDL_image.h"
 #include "Particle.h"
+#include <SDL_opengl.h>
 
 using std::vector;
 
@@ -15,6 +17,14 @@ int main(int, char**) {
 	SDL_Window* window = SDL_CreateWindow("Window title",
 	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 500, SDL_WINDOW_SHOWN);
 
+	SDL_Rect window_borders;
+	window_borders.x = 0;
+	window_borders.y = 0;
+	window_borders.h = 500;
+	window_borders.w = 500;
+
+	SDL_Surface* screen_surface = SDL_GetWindowSurface(window);
+
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1,
 			SDL_RENDERER_ACCELERATED || SDL_RENDERER_PRESENTVSYNC);
 
@@ -22,30 +32,49 @@ int main(int, char**) {
 
 	int x, y;
 
-	particle_vector.push_back(new Particle(renderer, 50, 100, 0.1, 0.1));
-	particle_vector.push_back(new Particle(renderer, 50, 100, -0.1, 0.1));
-	particle_vector.push_back(new Particle(renderer, 50, 100, 0.1, -0.1));
-	particle_vector.push_back(new Particle(renderer, 50, 100, -0.1, -0.1));
+	particle_vector.push_back(
+			new Particle(renderer, 50, 100, 0.1, 0.1, screen_surface));
+	particle_vector.push_back(
+			new Particle(renderer, 50, 100, -0.1, 0.1, screen_surface));
+	particle_vector.push_back(
+			new Particle(renderer, 50, 100, 0.1, -0.1, screen_surface));
+	particle_vector.push_back(
+			new Particle(renderer, 50, 100, -0.1, -0.1, screen_surface));
 
 	SDL_Event event;
 	bool running = true;
 
 	Uint32 starttime = SDL_GetTicks();
 
+	int lastx, lasty;
 	while (running) {
 		SDL_GetMouseState(&x, &y);
 
-		if (SDL_GetTicks()-starttime > 2) {
-			particle_vector.push_back(new Particle(renderer, x, y, 0.1, 0.1));
-			particle_vector.push_back(new Particle(renderer, x, y, -0.1, 0.1));
-			particle_vector.push_back(new Particle(renderer, x, y, 0.1, -0.1));
-			particle_vector.push_back(new Particle(renderer, x, y, -0.1, -0.1));
+		if (SDL_GetTicks() - starttime > 2 && x != lastx && y != lasty) {
+			particle_vector.push_back(
+					new Particle(renderer, x, y, 0.1, 0.1, screen_surface));
+			particle_vector.push_back(
+					new Particle(renderer, x, y, -0.1, 0.1, screen_surface));
+			particle_vector.push_back(
+					new Particle(renderer, x, y, 0.1, -0., screen_surface));
+			particle_vector.push_back(
+					new Particle(renderer, x, y, -0.1, -0.1, screen_surface));
 		}
 
-		for (vector<Particle*>::iterator iter = particle_vector.begin(); iter != particle_vector.end();
-		    iter++)
-		{
-		    (*iter)->render();
+		lastx = x;
+		lasty = y;
+
+		for (vector<Particle*>::iterator iter = particle_vector.begin();
+				iter != particle_vector.end();
+				/* nothing */) {
+			(*iter)->render();
+
+			if (SDL_HasIntersection(&window_borders, (*iter)->getRect())
+					== SDL_FALSE) {
+				iter = particle_vector.erase(iter);
+			} else {
+				iter++;
+			}
 		}
 
 		SDL_RenderPresent(renderer);
@@ -65,56 +94,6 @@ int main(int, char**) {
 			}
 		}
 	}
-
-	/* }
-
-	 // SDL_Surface* surface = SDL_LoadBMP("image.bmp");
-
-	 SDL_Surface* surface = IMG_Load("image.png");
-
-	 SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-
-	 SDL_FreeSurface(surface);
-
-	 SDL_Rect rect = SDL_Rect();
-	 rect.w = 100;
-	 rect.h = 100;
-
-	 int x = 50, y = 50;
-
-	 SDL_Event event;
-
-	 bool running = true;
-
-	 while(running) {
-	 SDL_Delay(100);
-
-	 SDL_RenderClear(renderer);
-
-	 rect.x = x;
-	 rect.y = y;
-
-	 SDL_RenderCopy(renderer, texture, NULL, &rect);
-
-	 SDL_RenderPresent(renderer);
-
-	 x++;
-	 y++;
-
-	 while( SDL_PollEvent( &event ) ) {
-	 if( event.type == SDL_QUIT ) {
-	 SDL_DestroyTexture(texture);
-
-	 SDL_DestroyRenderer(renderer);
-
-	 SDL_DestroyWindow(window);
-
-	 SDL_Quit();
-
-	 running = false;
-	 }
-	 }
-	 }*/
 
 	return 0;
 }
