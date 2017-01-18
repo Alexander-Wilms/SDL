@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="20.000002"
+   height="20.000002"
+   viewBox="0 0 5.2916673 5.2916673"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.0 r15299"
+   sodipodi:docname="particle.svg"
+   inkscape:export-filename="C:\Users\Alexander Wilms\Documents\Elektronik und Informatik\SDL\Particles\particle.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="1"
+     inkscape:pageshadow="2"
+     inkscape:zoom="4"
+     inkscape:cx="-31.356581"
+     inkscape:cy="3.6617135"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:snap-object-midpoints="true"
+     inkscape:snap-center="true"
+     inkscape:snap-text-baseline="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1600"
+     inkscape:window-height="838"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     showborder="true"
+     inkscape:showpageshadow="false"
+     inkscape:pagecheckerboard="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4485"
+       originx="-2.6458332"
+       originy="-6.3499937" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-2.645833,-285.35832)">
+    <path
+       sodipodi:type="star"
+       style="opacity:1;fill:#fce94f;fill-opacity:1;stroke:none;stroke-width:0.88194448;stroke-miterlimit:4;stroke-dasharray:2.64583353, 2.64583353;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4511"
+       sodipodi:sides="4"
+       sodipodi:cx="5.2916665"
+       sodipodi:cy="288.00415"
+       sodipodi:r1="2.6458335"
+       sodipodi:r2="0.62363714"
+       sodipodi:arg1="1.5707963"
+       sodipodi:arg2="2.3561805"
+       inkscape:flatsided="false"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 5.2916666,290.64998 -0.440972,-2.20485 -2.2048616,-0.44098 2.2048493,-0.44097 0.4409841,-2.20486 0.440972,2.20485 2.2048616,0.44098 -2.2048493,0.44097 z" />
+  </g>
+</svg>
