@@ -7,28 +7,38 @@
 #include <SDL.h>
 #include "Display.h"
 
-#define SIZE 500
+#define XSIZE 300*2
+#define YSIZE 200*2
 
 using std::cout;
 using std::endl;
 using std::vector;
 
-Display display(SIZE);
+Display display(XSIZE, YSIZE);
 
-vector<vector<double>> data(SIZE, vector<double>(SIZE));
+vector<vector<double>> data(XSIZE, vector<double>(YSIZE));
 
-double choose_color(double iterations, double max_iter) {
-	return (double) (255 * ((float) iterations) / max_iter);
+int choose_color(double iterations, double max_iter) {
+	return (int) (255 * ((float) iterations) / max_iter);
 }
 
-double Julia(double x, double y, double xadd, double yadd, double max_betrag_2, double max_iter) {
+double Julia(double x, double y, double xadd, double yadd, double max_betrag_2,
+		double max_iter) {
 	double remain_iter = max_iter;
 	double xx = x * x;
 	double yy = y * y;
 	double xy = x * y;
 	double absolute_value_2 = xx + yy;
 
+	SDL_Event event;
+
 	while (absolute_value_2 <= max_betrag_2 && remain_iter > 0) {
+		while (SDL_PollEvent(&event)) {
+								if (event.type == SDL_QUIT) {
+									return -1;
+								}
+							}
+
 		remain_iter = remain_iter - 1;
 		x = xx - yy + xadd;
 		y = xy + xy + yadd;
@@ -41,16 +51,24 @@ double Julia(double x, double y, double xadd, double yadd, double max_betrag_2, 
 	return max_iter - remain_iter;
 }
 
-void apfel(double re_min, double im_min, double re_max, double im_max, double max_betrag_2,
-		double xpixels, double ypixels, double max_iter) {
-	for(int y = 0; y < ypixels; y++) {
+void apfel(double re_min, double im_min, double re_max, double im_max,
+		double max_betrag_2, double xpixels, double ypixels, double max_iter) {
+
+
+	for (int y = 0; y < ypixels; y++) {
 		double c_im = im_min + (im_max - im_min) * y / ypixels;
 
-		for(int x = 0; x < xpixels; x++) {
+		for (int x = 0; x < xpixels; x++) {
+
+
 			double c_re = re_min + (re_max - re_min) * x / xpixels;
 
 			double iterationen = Julia(c_re, c_im, c_re, c_im, max_betrag_2,
 					max_iter);
+
+			if(iterationen == -1)
+				return;
+
 			double color = choose_color(iterationen, max_iter);
 			data[x][y] = color;
 		}
@@ -58,12 +76,11 @@ void apfel(double re_min, double im_min, double re_max, double im_max, double ma
 }
 
 int main(int argc, char *argv[]) {
-	for(int i = 0; i < SIZE; i++) {
-		for(int j = 0; j < SIZE; j++) {
+	for (int i = 0; i < XSIZE; i++) {
+		for (int j = 0; j < YSIZE; j++) {
 			data[i][j] = -1;
 		}
 	}
-
 
 	// https://de.wikipedia.org/wiki/Mandelbrot-Menge#Programmbeispiel
 
@@ -72,19 +89,26 @@ int main(int argc, char *argv[]) {
 	double re_max = 1;
 	double im_max = 1;
 	double max_betrag_2 = 4;
-	double max_iter = 100;
+	double max_iter = 1;
 
 	bool running = true;
 	SDL_Event event;
 
-		apfel(re_min, im_min, re_max, im_max, max_betrag_2, SIZE, SIZE,
+	while (running) {
+		while (SDL_PollEvent(&event)) {
+			if (event.type == SDL_QUIT) {
+				running = false;
+			}
+		}
+		apfel(re_min, im_min, re_max, im_max, max_betrag_2, XSIZE, YSIZE,
 				max_iter);
+
+		max_iter++;
 
 		display.setdata(data);
 
 		display.updateGraphics();
 
-		SDL_Delay(5000);
-
+	}
 	return 0;
 }

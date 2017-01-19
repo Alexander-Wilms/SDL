@@ -23,8 +23,10 @@ private:
 	SDL_Rect* rect;
 	SDL_Renderer* renderer;
 	SDL_Window* window;
+	int xsize;
+	int ysize;
 public:
-	Display(double);
+	Display(int, int);
 	virtual ~Display();
 	void setdata(vector<vector<double>> array);
 	void updateGraphics();
