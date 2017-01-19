@@ -1,16 +1,22 @@
 class Particle {
 public:
 		Particle(SDL_Renderer*, int, int, double, double, SDL_Surface*,
-			float, float, int);
+			double, double, int);
 		~Particle();
 		SDL_Rect* getRect();
 		void render();
 		bool isFaded();
 	private:
+		double SafeAcos (double);
+		double G;
+		double ownMass;
+		double CenterMass;
 		bool faded;
-		float alpha;
-		float realx;
-		float realy;
+		double alpha;
+		double realx;
+		double realy;
+		double startrealx;
+		double startrealy;
 		Uint32 timestamp_creation;
 		SDL_Surface* surface;
 		SDL_Surface* screen_surface;
@@ -18,7 +24,13 @@ public:
 		SDL_Texture* texture;
 		SDL_Rect rect;
 		SDL_Renderer* renderer;
-		float x_velocity;
-		float y_velocity;
+		double x_velocity;
+		double y_velocity;
+		double r;
+		double F;
+		double a;
+		double gravalpha;
+		double ax;
+		double ay;
 	}
 	;

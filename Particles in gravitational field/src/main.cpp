@@ -13,7 +13,7 @@
 
 using std::vector;
 
-#define CENTERMASS 10
+#define CENTERMASS 100
 
 int main(int, char**) {
 
@@ -33,9 +33,9 @@ int main(int, char**) {
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1,
 			SDL_RENDERER_ACCELERATED || SDL_RENDERER_PRESENTVSYNC);
 
-	vector<Particle*> particle_vector;
 
-	int x, y;
+
+	vector<Particle*> particle_vector;
 
 	SDL_Event event;
 	bool running = true;
@@ -44,23 +44,30 @@ int main(int, char**) {
 
 	srand(time(NULL));
 
-	float density = 1;
+	float density = 100;
+
+	bool done = false;
 
 	while (running) {
 
-		if (SDL_GetTicks() - starttime > 500) {
+		if (SDL_GetTicks() - starttime > 100) {
+			//done = true;
 			starttime = SDL_GetTicks();
 
 			int x = rand()%500;
 			int y = rand()%500;
-			int size = rand()%50;
-			int mass = density * pow(size,2);
 
-			float xvel = 1. / (rand()%10);
+			//x = 0;
+			//y = 0;
+
+			int size = rand()%50;
+			int mass = 100;//density * pow(size,2);
+
+			float xvel = 50. / (rand()%10);
 			if(rand()%2)
 				xvel *= -1;
 
-			float yvel = 1. / (rand()%10);
+			float yvel = 50. / (rand()%10);
 			if(rand()%2)
 				yvel *= -1;
 
@@ -81,6 +88,7 @@ int main(int, char**) {
 
 			if (SDL_HasIntersection(&window_borders, (*iter)->getRect())
 					== SDL_FALSE || (*iter)->isFaded()) {
+				delete &iter.base();
 				iter = particle_vector.erase(iter);
 			} else {
 				iter++;
