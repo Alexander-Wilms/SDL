@@ -11,11 +11,7 @@
 #include <vector>
 #include <SDL.h>
 
-
-
 using std::vector;
-
-
 
 class Display {
 private:
@@ -31,7 +27,5 @@ public:
 	void setdata(vector<vector<double>> array);
 	void updateGraphics();
 };
-
-
 
 #endif /* DISPLAY_H_ */

@@ -34,10 +34,10 @@ double Julia(double x, double y, double xadd, double yadd, double max_betrag_2,
 
 	while (absolute_value_2 <= max_betrag_2 && remain_iter > 0) {
 		while (SDL_PollEvent(&event)) {
-								if (event.type == SDL_QUIT) {
-									return -1;
-								}
-							}
+			if (event.type == SDL_QUIT) {
+				return -1;
+			}
+		}
 
 		remain_iter = remain_iter - 1;
 		x = xx - yy + xadd;
@@ -54,19 +54,17 @@ double Julia(double x, double y, double xadd, double yadd, double max_betrag_2,
 void apfel(double re_min, double im_min, double re_max, double im_max,
 		double max_betrag_2, double xpixels, double ypixels, double max_iter) {
 
-
 	for (int y = 0; y < ypixels; y++) {
 		double c_im = im_min + (im_max - im_min) * y / ypixels;
 
 		for (int x = 0; x < xpixels; x++) {
-
 
 			double c_re = re_min + (re_max - re_min) * x / xpixels;
 
 			double iterationen = Julia(c_re, c_im, c_re, c_im, max_betrag_2,
 					max_iter);
 
-			if(iterationen == -1)
+			if (iterationen == -1)
 				return;
 
 			double color = choose_color(iterationen, max_iter);

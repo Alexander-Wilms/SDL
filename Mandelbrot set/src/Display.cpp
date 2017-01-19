@@ -22,7 +22,7 @@ Display::Display(int XSIZE, int YSIZE) {
 	SDL_Init(SDL_INIT_VIDEO);
 
 	window = SDL_CreateWindow("Window title", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, XSIZE, YSIZE, SDL_WINDOW_SHOWN);
+	SDL_WINDOWPOS_CENTERED, XSIZE, YSIZE, SDL_WINDOW_SHOWN);
 
 	renderer = SDL_CreateRenderer(window, -1,
 			SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -45,12 +45,13 @@ void Display::setdata(vector<vector<double>> array) {
 }
 
 void Display::updateGraphics() {
-	for(int i = 0; i < xsize; i++) {
-		for(int j = 0; j < ysize; j++) {
-				rect->x = i;
-				rect->y = j;
-				SDL_SetRenderDrawColor(renderer, data[i][j], data[i][j], data[i][j], 255);
-				SDL_RenderFillRect(renderer, rect);
+	for (int i = 0; i < xsize; i++) {
+		for (int j = 0; j < ysize; j++) {
+			rect->x = i;
+			rect->y = j;
+			SDL_SetRenderDrawColor(renderer, data[i][j], data[i][j], data[i][j],
+					255);
+			SDL_RenderFillRect(renderer, rect);
 		}
 	}
 
