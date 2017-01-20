@@ -2,13 +2,17 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cmath>
 #include <time.h>
 #include <vector>
 #include <SDL.h>
 #include "Display.h"
 
-#define XSIZE 300*2
-#define YSIZE 200*2
+//#define XSIZE 300*2
+//#define YSIZE 200*2
+
+#define XSIZE 1600
+#define YSIZE 900
 
 using std::cout;
 using std::endl;
@@ -20,13 +24,13 @@ vector<vector<double>> data(XSIZE, vector<double>(YSIZE));
 
 int choose_color(double iterations, double max_iter) {
 	// greyscale
-	// return (int) (255 * ((float) iterations) / max_iter);
+	 return (int) (255 * iterations / max_iter);
 
 	// rainbow
 	//return (int) (360 * ((float) iterations) / max_iter);
 
 	// blue gradient
-	return (int) (((((float) iterations) / max_iter)*(240-180)+180));
+	//return (int) (((((float) iterations) / max_iter)*(240-180)+180));
 }
 
 double Julia(double x, double y, double xadd, double yadd, double max_betrag_2,
@@ -56,6 +60,9 @@ double Julia(double x, double y, double xadd, double yadd, double max_betrag_2,
 	}
 
 	return max_iter - remain_iter;
+
+	// continuous color gradient
+	//return (double) ((double) max_iter - remain_iter - log(log(absolute_value_2) / log(4)) / log(2));
 }
 
 void apfel(double re_min, double im_min, double re_max, double im_max,
@@ -71,10 +78,7 @@ void apfel(double re_min, double im_min, double re_max, double im_max,
 			double iterationen = Julia(c_re, c_im, c_re, c_im, max_betrag_2,
 					max_iter);
 
-			if (iterationen == -1)
-				return;
-
-			double color = choose_color(iterationen, max_iter);
+			int color = choose_color(iterationen, max_iter);
 			data[x][y] = color;
 		}
 	}
@@ -94,7 +98,7 @@ int main(int argc, char *argv[]) {
 	double re_max = 1;
 	double im_max = 1;
 	double max_betrag_2 = 4;
-	double max_iter = 1;
+	double max_iter = 100;
 
 	bool running = true;
 	SDL_Event event;
@@ -105,9 +109,11 @@ int main(int argc, char *argv[]) {
 				running = false;
 			}
 		}
+
 		apfel(re_min, im_min, re_max, im_max, max_betrag_2, XSIZE, YSIZE,
 				max_iter);
 
+		cout << "max_iter: " << max_iter << endl;
 		max_iter++;
 
 		display.setdata(data);
