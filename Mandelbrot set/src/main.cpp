@@ -19,7 +19,14 @@ Display display(XSIZE, YSIZE);
 vector<vector<double>> data(XSIZE, vector<double>(YSIZE));
 
 int choose_color(double iterations, double max_iter) {
-	return (int) (255 * ((float) iterations) / max_iter);
+	// greyscale
+	// return (int) (255 * ((float) iterations) / max_iter);
+
+	// rainbow
+	//return (int) (360 * ((float) iterations) / max_iter);
+
+	// blue gradient
+	return (int) (((((float) iterations) / max_iter)*(240-180)+180));
 }
 
 double Julia(double x, double y, double xadd, double yadd, double max_betrag_2,

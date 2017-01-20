@@ -21,6 +21,7 @@ private:
 	SDL_Window* window;
 	int xsize;
 	int ysize;
+	SDL_Color calculateColor(int);
 public:
 	Display(int, int);
 	virtual ~Display();
