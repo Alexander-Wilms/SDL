@@ -25,8 +25,11 @@ Display::Display(int XSIZE, int YSIZE) {
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
-	window = SDL_CreateWindow("Window title", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, XSIZE, YSIZE, SDL_WINDOW_SHOWN || SDL_WINDOW_FULLSCREEN);
+	//window = SDL_CreateWindow("Window title", SDL_WINDOWPOS_CENTERED,
+			//SDL_WINDOWPOS_CENTERED, XSIZE, YSIZE, SDL_WINDOW_SHOWN || SDL_WINDOW_FULLSCREEN);
+
+	window = SDL_CreateWindow("Mandelbrot set", SDL_WINDOWPOS_CENTERED,
+				SDL_WINDOWPOS_CENTERED, XSIZE, YSIZE, SDL_WINDOW_SHOWN);
 
 	renderer = SDL_CreateRenderer(window, -1,
 			SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -61,6 +64,7 @@ void Display::updateGraphics() {
 			// rainbow
 			//color = calculateColor(data[i][j]);
 			//SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+
 			SDL_RenderFillRect(renderer, rect);
 		}
 	}
