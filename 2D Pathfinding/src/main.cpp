@@ -5,6 +5,7 @@
 #include <SDL.h>
 #include "SDL_image.h"
 #include <vector>
+#include <iomanip>
 
 using std::cout;
 using std::endl;
@@ -16,35 +17,19 @@ SDL_Window* window;
 SDL_Renderer* renderer;
 
 // http://sdl.beuc.net/sdl.wiki/Pixel_Access
-Uint32 getpixel(SDL_Surface *surface, int x, int y)
+vector<int>* getpixel(SDL_Surface *surface, int x, int y)
 {
     int bpp = surface->format->BytesPerPixel;
     /* Here p is the address to the pixel we want to retrieve */
-    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+    Uint8* p = (Uint8 *) surface->pixels + y * surface->pitch + x * bpp;
 
-    switch(bpp) {
-    case 1:
-        return *p;
-        break;
+    vector<int>* color = new vector<int>();
 
-    case 2:
-        return *(Uint16 *)p;
-        break;
+    color->push_back(p[0]);
+    color->push_back(p[1]);
+    color->push_back(p[2]);
 
-    case 3:
-        if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
-            return p[0] << 16 | p[1] << 8 | p[2];
-        else
-            return p[0] | p[1] << 8 | p[2] << 16;
-        break;
-
-    case 4:
-        return *(Uint32 *)p;
-        break;
-
-    default:
-        return 0;       /* shouldn't happen, but avoids warnings */
-    }
+    return color;
 }
 
 int main(int, char**) {
@@ -52,12 +37,12 @@ int main(int, char**) {
 	SDL_Surface* surface = SDL_LoadBMP("image.bmp");
 
 	vector<vector<int> > bmp_array;
-	Uint32 this_pixel;
+	vector<int>* color;
 
 	for(int x = 0; x < surface->w; x++) {
 		for(int y = 0; y < surface->h; y++) {
-			this_pixel = getpixel(surface, x, y);
-			cout << this_pixel << "\t";
+			color = getpixel(surface, x, y);
+			cout << std::setw(3) << color->at(0) << "," << std::setw(3) << color->at(1) << ","  << std::setw(3) << color->at(2) << "\t";
 		}
 		cout << endl;
 	}
