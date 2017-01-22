@@ -1,15 +1,22 @@
 // based on https://github.com/Alexander-Wilms/Robotics-simulation/blob/master/Termin%206%20-%20Breitensuche/Termin6/Termin6/main.cpp
 
-#include <iostream>
-#include <fstream>
-#include <SDL.h>
-#include "SDL_image.h"
-#include <vector>
-#include <iomanip>
 #include <stdio.h>
+#include <SDL.h>
+#include <SDL_endian.h>
+#include <SDL_events.h>
+#include <SDL_pixels.h>
+#include <SDL_render.h>
+#include <SDL_stdinc.h>
+#include <SDL_surface.h>
+#include <SDL_timer.h>
+#include <SDL_video.h>
+#include <algorithm>
+#include <iostream>
 #include <queue>
-#include <string> // for std::string
-#include <stdlib.h> // for sleep()
+#include <vector>
+#include <cstdlib>
+#include <time.h>
+#include <cmath>
 
 #define at(x) operator[](x)
 
@@ -52,12 +59,6 @@ const int DirTable[8][2] = { { -1, 0 },  // oben
 int height;  // Hoehe des Konfigurationsraums
 int width;   // Breite des Konfigurationsraums
 
-//char **cspace; // 2D Konfigurationsraum. Falls cspace.at(x).at(y) != 0, dann verursacht die Konfiguration <x,y> eine Kollision
-//Cell **aCells; // In diesem 2D Feld werden die Ergebisse des Algorithmus abgelegt
-
-/*vector<vector<SDL_Color> > cspace;
- vector<vector<Cell> > aCells;*/
-
 SDL_Surface* surface;
 SDL_Texture* texture;
 
@@ -76,15 +77,6 @@ SDL_Renderer* renderer;
 // http://sdl.beuc.net/sdl.wiki/Pixel_Access
 // https://www.gamedev.net/topic/530253-sdl-getting-rgb-values-of-a-surfaces-pixel/
 SDL_Color getpixel(SDL_Surface *surface, int x, int y) {
-	y %= 360;
-	x %= 360;
-	if (y < 0)
-		y = 0;
-	if (x < 0)
-		x = 0;
-
-	//y = 360 - 1 - y;
-	//x = 360-1-x;
 	const Uint8 &bpp = surface->format->BytesPerPixel;
 	/* Here p is the address to the pixel we want to retrieve */
 	Uint8 *p = (Uint8 *) surface->pixels + y * surface->pitch + x * bpp;
@@ -119,49 +111,35 @@ SDL_Color getpixel(SDL_Surface *surface, int x, int y) {
 
 // http://sdl.beuc.net/sdl.wiki/Pixel_Access
 void putpixel(SDL_Surface *surface, int x, int y, SDL_Color pixel) {
-	try {
-		y %= 360;
-		x %= 360;
+	Uint32 flattened_pixel = SDL_MapRGB(surface->format, pixel.r, pixel.g, pixel.b);
+	int bpp = surface->format->BytesPerPixel;
+	/* Here p is the address to the pixel we want to set */
+	Uint8 *p = (Uint8 *) surface->pixels + y * surface->pitch + x * bpp;
 
-		if (y < 0)
-			y = 0;
-		if (x < 0)
-			x = 0;
+	switch (bpp) {
+	case 1:
+		*p = flattened_pixel;
+		break;
 
-		//y = 360 - 1 - y;
-		//x=360-1-x;
-		Uint32 flattened_pixel = SDL_MapRGB(surface->format, pixel.r, pixel.g, pixel.b);
-		int bpp = surface->format->BytesPerPixel;
-		/* Here p is the address to the pixel we want to set */
-		Uint8 *p = (Uint8 *) surface->pixels + y * surface->pitch + x * bpp;
+	case 2:
+		*(Uint16 *) p = flattened_pixel;
+		break;
 
-		switch (bpp) {
-		case 1:
-			*p = flattened_pixel;
-			break;
-
-		case 2:
-			*(Uint16 *) p = flattened_pixel;
-			break;
-
-		case 3:
-			if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
-				p[0] = (flattened_pixel >> 16) & 0xff;
-				p[1] = (flattened_pixel >> 8) & 0xff;
-				p[2] = flattened_pixel & 0xff;
-			} else {
-				p[0] = flattened_pixel & 0xff;
-				p[1] = (flattened_pixel >> 8) & 0xff;
-				p[2] = (flattened_pixel >> 16) & 0xff;
-			}
-			break;
-
-		case 4:
-			*(Uint32 *) p = flattened_pixel;
-			break;
+	case 3:
+		if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+			p[0] = (flattened_pixel >> 16) & 0xff;
+			p[1] = (flattened_pixel >> 8) & 0xff;
+			p[2] = flattened_pixel & 0xff;
+		} else {
+			p[0] = flattened_pixel & 0xff;
+			p[1] = (flattened_pixel >> 8) & 0xff;
+			p[2] = (flattened_pixel >> 16) & 0xff;
 		}
-	} catch (int e) {
-		cout << "err in put" << endl;
+		break;
+
+	case 4:
+		*(Uint32 *) p = flattened_pixel;
+		break;
 	}
 }
 
@@ -176,7 +154,9 @@ void update();
 
 int main(int, char**) {
 
-	//std::cout.setstate(std::ios_base::failbit);
+	srand(time(NULL));
+
+	std::cout.setstate(std::ios_base::failbit);
 
 	SDL_Init(SDL_INIT_VIDEO);
 
@@ -187,36 +167,14 @@ int main(int, char**) {
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-	//texture = SDL_CreateTextureFromSurface(renderer, surface);
-
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 360, 360);
-
-	cout << "pixel 0,0: " << endl;
-
-	SDL_Color testcolor = getpixel(surface, 0, 0);
-
-	cout << (int) testcolor.r << "," << (int) testcolor.g << "," << (int) testcolor.b << endl;
 
 	update();
 
 	vector<vector<int> > bmp_array;
-	//vector<int>* color;
 
 	width = surface->w;
 	height = surface->h;
-
-	cout << "width: " << width << endl;
-	cout << "height: " << height << endl;
-
-	//	for (int x = 0; x < surface->w; x++) {
-	//		for (int y = 0; y < surface->h; y++) {
-	//			color = getpixel(surface, x, y);
-	//			cout << std::setw(3) << color->at(0) << "," << std::setw(3)
-	//					<< color->at(1) << "," << std::setw(3) << color->at(2)
-	//					<< "\t";
-	//		}
-	//		cout << endl;
-	//	}
 
 	configuration_space_colors.resize(width, vector<SDL_Color>(height));
 	configuration_space_cells.resize(width, vector<Cell>(height));
@@ -242,19 +200,19 @@ int main(int, char**) {
 	int nGoalY = 20;
 
 	Uint32 starttime = SDL_GetTicks();
-	//getchar();
 
 	// Pfad suchen
 	bool bFound = FindPath(nStartX, nStartY, nGoalX, nGoalY);
 
-	cout << "returned from findpath" << endl;
 	Uint32 dwElapsed = SDL_GetTicks() - starttime;
+	starttime = SDL_GetTicks();
+	std::cout.clear();
 	cout << "Die Suche dauerte: " << dwElapsed << "ms" << endl;
 	cout << "Pfad gefunden: " << bFound << endl;
 
 	// Überprüfen, ob ein Pfad gefunden wurde
 	if (bFound) {
-		update();
+		//update();
 		//FILE *fp = fopen("path.prg", "w");
 		//if (fp != NULL)
 		//fp = stdout;
@@ -262,8 +220,6 @@ int main(int, char**) {
 		// Den Pfad vom Ziel zum Start zurückgehen und den Pfad markieren
 		x = nGoalX;
 		y = nGoalY;
-
-		cout << "Goal x=" << x << ", y=" << y << endl;
 
 		Cell cell;
 		while (configuration_space_cells.at(x).at(y).nLastX != -1) // Bei -1 sind wir am Start
@@ -276,7 +232,7 @@ int main(int, char**) {
 				return 0;
 			}
 
-			cout << "LastX: " << configuration_space_cells.at(x).at(y).nLastX << endl;
+			//cout << "LastX: " << configuration_space_cells.at(x).at(y).nLastX << endl;
 			// EASY-ROB Programm erzeugen
 			// Die Gelenkwerte müssen entsprechend den Zellen angepasst werden!!!
 			//fprintf(fp, "JUMP_TO_AX %f %f\n", (x - width / 2) * 0.002f, (y - height / 2) * 0.002f); // von -1m bis +1m in 20mm Schritten
@@ -289,35 +245,24 @@ int main(int, char**) {
 			cell = configuration_space_cells.at(x).at(y);
 			x = cell.nLastX;
 			y = cell.nLastY;
-			if(cell.nLastX == -1)
-				break;
 			++length;
-			update();
+			//update();
 		}
 
+		dwElapsed = SDL_GetTicks() - starttime;
 		cout << "Pfad der Laenge " << length << " gefunden in " << dwElapsed << " ms" << endl;
+		update();
 
 		//std::string file_save = file_basename + "_bfs.png";
 		// Bild ausgeben, so das man den Pfad sehen kann
 		//if (!SaveAsPNG(file_save.c_str(), cspace, width, height))
 		//printf("Fehler beim Erzeugen der PNG Datei\n");
 
-		//SDL_Color tmp;
-		/*for (int i = 0; i < surface->w; i++) {
-		 for (int j = 0; j < surface->h; j++) {
-		 putpixel(surface, i, j, configuration_space_colors[i][j]);
-		 }
-		 }*/
-		//update();
 		//if (fp != stdout)
 		//fclose(fp);
 	} else {
 		printf("Keinen Pfad gefunden!\n");
 	}
-	// Cleanup
-	/*for (y = 0; y < height; y++)    // Alle Cells vom Heap löschen
-	 delete[] aCells[y];
-	 delete[] aCells;*/
 
 	while (true) {
 		SDL_PollEvent(&e);
@@ -332,14 +277,7 @@ int main(int, char**) {
 }
 
 void update() {
-	if (getpixel(surface, 180, 180).r == 0)
-		getchar();
-
 	SDL_UpdateTexture(texture, NULL, surface->pixels, surface->pitch);
-
-	if (texture == NULL)
-		cout << "shit";
-	//SDL_RenderClear(renderer);
 
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
 
@@ -361,180 +299,98 @@ void deinit() {
  *  Algorithmus zum finden eines Pfades vom Start zum Endpunkt (goal)
  */
 bool FindPath(int nStartX, int nStartY, int nGoalX, int nGoalY) {
-	try {
-		printf("Suche Pfad von x=%d y=%d nach x=%d y=%d\n", nStartX, nStartY, nGoalX, nGoalY);
+	printf("Suche Pfad von x=%d y=%d nach x=%d y=%d\n", nStartX, nStartY, nGoalX, nGoalY);
 
-		// initalize cells
-		for (int my_y = 0; my_y < height; my_y++) {
-			for (int my_x = 0; my_x < width; my_x++) {
-				configuration_space_cells[my_x][my_y].bMarked = false;
-			}
+	// initalize cells
+	for (int my_y = 0; my_y < height; my_y++) {
+		for (int my_x = 0; my_x < width; my_x++) {
+			configuration_space_cells[my_x][my_y].bMarked = false;
+		}
+	}
+
+	// create queue
+	std::queue<Coordinate> queue;
+
+	// starting cell
+	Coordinate c;
+	c.x = nStartX;
+	c.y = nStartY;
+
+	// push first cell into queue
+	queue.push(c);
+
+	// mark starting cell for backtracing
+	configuration_space_cells[nStartX][nStartY].nLastX = -1;
+
+	// mark starting cell
+	configuration_space_cells[c.x][c.y].bMarked = true;
+	double color = 0;
+	int iteration_counter = 0;
+	// while there's still cells in the queue...
+	while (!queue.empty()) {
+		// slow down and update rendering
+		//iteration_counter++;
+		/*if (iteration_counter % 100 == 0) {
+			update();
+			SDL_Delay(1);
+		}*/
+
+		SDL_PollEvent(&e);
+		if (e.type == SDL_QUIT) {
+			return false;
 		}
 
-		// create queue
-		std::queue<Coordinate> queue;
+		// get the first element in the queue
+		c.x = queue.front().x;
+		c.y = queue.front().y;
 
-		// starting cell
-		Coordinate c;
-		c.x = nStartX;
-		c.y = nStartY;
+		queue.pop();
 
-		//  Folgende Zeilen demonstrieren die Manipulation von Queues (Warteschlange)
-		//  Einfach auskommentieren und testen
+		// if it has the desired coordinates we terminate
+		if (c.x == nGoalX && c.y == nGoalY) {
+			printf("last: %d %d \n", configuration_space_cells[c.x][c.y].nLastX, configuration_space_cells[c.x][c.y].nLastY);
+			return true;
+		}
 
-		/* printf("Queue leer? %d\n", queue.empty());       // Am Anfang ist die Queue leer
-		 queue.push(c);                                   // Element in die Queue anstellen
-		 printf("Queue leer? %d\n", queue.empty());       // Jetzt sollte die Queue nicht mehr leer sein
-		 printf("Elemente in Queue: %d\n", queue.size()); // Anzahl Elemente in der Queue
-		 Coordinate test = queue.front();                 // front() gibt das forderste Element in der Queue zurück,
-		 printf("x: %d, y: %d\n", test.x, test.y);        // jedoch wird das Element dadurch nicht entfernt!
-		 queue.pop();                                     // Entfernt das erste Element aus der Queue
-		 printf("Queue leer? %d\n", queue.empty());       // Nun sollte die Queue wieder leer sein
-		 */
+		Coordinate tmp;
+		int i_tmp;
+		for (int i = 0; i < 8; i++) {
+			i_tmp = i;
+			// randomize walk
+			// i = rand()%9;
+			// make sure we're still within the array's bounds
+			if (c.x + DirTable[i][0] >= 0 && c.x + DirTable[i][0] < height && c.y + DirTable[i][1] >= 0 && c.y + DirTable[i][1] < width) {
+				// if we haven't checked the next cell yet...
+				if (configuration_space_cells.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).bMarked == false) {
+					// mark cell
+					configuration_space_cells.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).bMarked = true;
 
-		// push first cell into queue
-		queue.push(c);
+					// if there's no collision in the next cell...
+					if (configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).r == 255 && configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).g == 255 && configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).b == 255) {
 
-		cout << "nStartY: " << nStartY << endl;
-		cout << "nStartX: " << nStartX << endl;
+						// watch the BFS as it happens
+						cout << "coloring pixel" << endl;
+						configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).r = 127;//(int) color;
+						configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).g = 127;//(int) color;
+						configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).b = 127;//(int) color;
 
-		// mark starting cell for backtracing
-		configuration_space_cells[nStartX][nStartY].nLastX = -1;
+//						color += 0.5;
+//						//color=std::fmod(color,255);
+//						if (color > 255)
+//							color = 0;
 
-		cout << "nach zuweisung" << endl;
+						putpixel(surface, c.x + DirTable[i][0], c.y + DirTable[i][1], configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]));
 
-		// mark starting cell
-		configuration_space_cells[c.x][c.y].bMarked = true;
-
-		int color_int = 127;
-
-		int everytens = 0;
-		// while there's still cells in the queue...
-		while (!queue.empty()) {
-			//everytens++;
-			//if (everytens % 100000 == 0)
-				//update();
-			cout << "in loop" << endl;
-			cout << "error" << SDL_GetError() << endl;
-
-			cout << "queue size: " << queue.size() << endl;
-			SDL_PollEvent(&e);
-			if (e.type == SDL_QUIT) {
-				//update();
-				cout << "quitting" << endl;
-				cout << "queue size was: " << queue.size() << endl;
-				cout << "error" << SDL_GetError() << endl;
-				std::queue<Coordinate> empty;
-				std::swap(queue, empty);
-				break;
-			}
-
-			// get the first element in the queue
-			c.x = queue.front().x;
-			c.y = queue.front().y;
-			//		color.r = 255;
-			//			color.g = color_int2;
-			//			color_int2++;
-			//			color_int2%=255;
-			//			color.b = 0;
-			//			if(c.x < 0)
-			//				c.x = 0;
-			//			if(c.y < 0)
-			//				c.y = 0;
-			//			if(c.x>359)
-			//				c.x = 359;
-			//			if(c.y>359)
-			//				c.y = 359;
-			//			putpixel(surface, c.x, c.y, color);
-			//update();
-
-			/*SDL_Color color;
-			 color.r = 0;
-			 color.g = 0;
-			 color.b = 0;
-			 putpixel(surface, c.x, c.y, color);*/
-
-			//update();
-			cout << "x: " << c.x << endl;
-			cout << "y: " << c.y << endl;
-
-			queue.pop();
-
-			// if it has the desired coordinates we terminate
-			if (c.x == nGoalX && c.y == nGoalY) {
-				cout << "arrived at goal coordinates" << endl;
-				printf("found: %d %d \n", c.x, c.y);
-				//printf("last: %d %d \n", configuration_space_cells[c.x][c.y].nLastX, configuration_space_cells[c.x][c.y].nLastY);
-				return true;
-			} else {
-				cout << "have not arrived at goal" << endl;
-			}
-
-			update();
-
-			Coordinate temp;
-			for (int i = 0; i < 8; i++) {
-
-				cout << "betrachte nachbar " << i << "an der stelle" << c.x + DirTable[i][0] << "," << c.y + DirTable[i][1] << endl;
-				// make sure we're still within the array's bounds
-				if (c.x + DirTable[i][0] >= 0 && c.x + DirTable[i][0] < height && c.y + DirTable[i][1] >= 0 && c.y + DirTable[i][1] < width) {
-					// if we haven't checked the next cell yet...
-					if (configuration_space_cells.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).bMarked == false) {
-						cout << "betrachtete Zelle war noch nicht markiert" << endl;
-						// mark cell
-						configuration_space_cells.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).bMarked = true;
-
-						// if there's no collision in the next cell...
-
-						cout << "r of neighbor: " << (int) configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).r << endl;
-						cout << "g of neighbor: " << (int) configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).g << endl;
-						cout << "b of neighbor: " << (int) configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).b << endl;
-
-						//if ((configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).r == 255 && configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).g == 255 && configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).b == 255) || (configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).r == configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).g && configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).g == configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).b)) {
-							if (configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).r == 255 && configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).g == 255 && configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).b == 255) {
-
-							cout << "coloring pixel" << endl;
-							// watch the BFS as it happens
-							//color_int %= 255;
-							configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).r = 127;
-							configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).g = 127;
-							configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).b = 127;
-							//color_int++;
-
-							putpixel(surface, c.x + DirTable[i][0], c.y + DirTable[i][1], configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]));
-
-							/*for (int k = 0; k < surface->w; k++) {
-							 for (int l = 0; l < surface->h; l++) {
-							 putpixel(surface, k, l, configuration_space_colors[k][l]);
-							 }
-							 }*/
-
-							//update();
-							configuration_space_cells.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).nLastX = c.x;
-							configuration_space_cells.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).nLastY = c.y;
-							temp.x = c.x + DirTable[i][0];
-							temp.y = c.y + DirTable[i][1];
-							queue.push(temp);
-							cout << "pushed into queue" << endl;
-
-							//color.r++;
-							//color.g++;
-							//color.b++;
-						}
-					} else {
-						cout << "betrachtete Zelle war schon markiert" << endl;
+						configuration_space_cells.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).nLastX = c.x;
+						configuration_space_cells.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).nLastY = c.y;
+						tmp.x = c.x + DirTable[i][0];
+						tmp.y = c.y + DirTable[i][1];
+						queue.push(tmp);
 					}
 				}
-				cout << "nachbar abgearbeitet" << endl;
-
 			}
-
-			cout << "queue size: " << queue.size() << endl;
+			i = i_tmp;
 		}
-		cout << "after loop" << endl;
-		return false; // Default Return
-	} catch (int e) {
-		cout << "shit" << endl;
 	}
 	return false;
 }
