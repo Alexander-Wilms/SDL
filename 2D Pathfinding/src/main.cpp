@@ -183,7 +183,9 @@ int main(int, char**) {
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-	texture = SDL_CreateTextureFromSurface(renderer, surface);
+	//texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 360, 360);
 
 	cout << "pixel 0,0: " << endl;
 
@@ -353,7 +355,6 @@ int main(int, char**) {
 void update() {
 	if(getpixel(surface, 180, 180).r == 0)
 		getchar();
-
 
 
 	SDL_UpdateTexture(texture, NULL, surface->pixels, surface->pitch);
