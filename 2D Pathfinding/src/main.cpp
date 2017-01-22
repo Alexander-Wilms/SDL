@@ -185,7 +185,7 @@ int main(int, char**) {
 
 	//texture = SDL_CreateTextureFromSurface(renderer, surface);
 
-	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 360, 360);
+	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 360, 360);
 
 	cout << "pixel 0,0: " << endl;
 
