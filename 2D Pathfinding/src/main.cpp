@@ -454,20 +454,20 @@ bool FindPath(int nStartX, int nStartY, int nGoalX, int nGoalY) {
 		c.y = queue.front().y;
 
 		SDL_Color color;
-		color.r = 255;
-			color.g = color_int2;
-			color_int2++;
-			color_int2%=255;
-			color.b = 0;
-			if(c.x < 0)
-				c.x = 0;
-			if(c.y < 0)
-				c.y = 0;
-			if(c.x>359)
-				c.x = 359;
-			if(c.y>359)
-				c.y = 359;
-			putpixel(surface, c.x, c.y, color);
+//		color.r = 255;
+//			color.g = color_int2;
+//			color_int2++;
+//			color_int2%=255;
+//			color.b = 0;
+//			if(c.x < 0)
+//				c.x = 0;
+//			if(c.y < 0)
+//				c.y = 0;
+//			if(c.x>359)
+//				c.x = 359;
+//			if(c.y>359)
+//				c.y = 359;
+//			putpixel(surface, c.x, c.y, color);
 			//update();
 
 		/*SDL_Color color;
@@ -512,26 +512,28 @@ bool FindPath(int nStartX, int nStartY, int nGoalX, int nGoalY) {
 					cout << "g of neighbor: " << (int) configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).g << endl;
 					cout << "b of neighbor: " << (int) configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).b << endl;
 
-					cout << "coloring pixel" << endl;
-					// watch the BFS as it happens
-					//color_int %= 255;
-					configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).r = color_int;
-					configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).g = color_int;
-					configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).b = color_int;
-					//color_int++;
 
-					putpixel(surface, c.x + DirTable[i][0], c.y + DirTable[i][1], configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]));
-
-					/*for (int k = 0; k < surface->w; k++) {
-					 for (int l = 0; l < surface->h; l++) {
-					 putpixel(surface, k, l, configuration_space_colors[k][l]);
-					 }
-					 }*/
-
-					update();
 
 					if ((configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).r == 255 && configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).g == 255 && configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).b == 255)||
 							(configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).r == configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).g && configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).g == configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).b)) {
+
+						cout << "coloring pixel" << endl;
+											// watch the BFS as it happens
+											//color_int %= 255;
+											configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).r = color_int;
+											configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).g = color_int;
+											configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).b = color_int;
+											//color_int++;
+
+											putpixel(surface, c.x + DirTable[i][0], c.y + DirTable[i][1], configuration_space_colors.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]));
+
+											/*for (int k = 0; k < surface->w; k++) {
+											 for (int l = 0; l < surface->h; l++) {
+											 putpixel(surface, k, l, configuration_space_colors[k][l]);
+											 }
+											 }*/
+
+											update();
 
 						configuration_space_cells.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).nLastX = c.x;
 						configuration_space_cells.at(c.x + DirTable[i][0]).at(c.y + DirTable[i][1]).nLastY = c.y;
