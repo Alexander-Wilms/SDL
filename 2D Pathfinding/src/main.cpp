@@ -80,7 +80,7 @@ struct Coordinate {
 //		{ 1, -1 },  // links-unten
 //		{ -1, -1 } };   // links-oben
 
-const int DirTable[8][2] = { { 1, 1 },  // oben
+int DirTable[8][2] = { { 1, 1 },  // oben
 		{ 0, 1 },  // rechts
 		{ -1, 1 },  // unten
 		{ -1, 0 },  // links
@@ -115,6 +115,22 @@ int A_star(int nStartX, int nStartY, int nGoalX, int nGoalY);
 void expand_node(A_star_Node current_node, A_star_Node goal_node);
 double heuristic(A_star_Node start, A_star_Node goal);
 
+void randomizeNeighbors() {
+	int index_1 = rand()%8;
+	int index_2 = rand()%8;
+	while(index_1 == index_2) {
+		index_2 = rand()%8;
+	}
+	int tmp1 = DirTable[index_1][0];
+	int tmp2 = DirTable[index_1][1];
+
+	DirTable[index_1][0] = DirTable[index_2][0];
+	DirTable[index_1][1] = DirTable[index_2][1];
+
+	DirTable[index_2][0] = tmp1;
+	DirTable[index_2][1] = tmp2;
+}
+
 int main(int, char**) {
 
 	init();
@@ -125,15 +141,15 @@ int main(int, char**) {
 	// cspace_revolute.png   (350,180) -> (120,180)
 
 	// Startposition
-	int nStartX = 120;
-	int nStartY = 260;
+	int nStartX = 100;
+	int nStartY = 300;
 
 	// Zielposition
-	int nGoalX = 300;
-	int nGoalY = 300;
+	int nGoalX = 140;
+	int nGoalY = 40;
 
-	BFS(nStartX, nStartY, nGoalX, nGoalY);
-	//A_star(nStartX, nStartY, nGoalX, nGoalY);
+	//BFS(nStartX, nStartY, nGoalX, nGoalY);
+	A_star(nStartX, nStartY, nGoalX, nGoalY);
 
 	while (true) {
 		SDL_PollEvent(&e);
@@ -175,7 +191,16 @@ int A_star(int nStartX, int nStartY, int nGoalX, int nGoalY) {
 	goal_node.x = nGoalX;
 	goal_node.y = nGoalY;
 
-	double start_distance = sqrt(SIZE*SIZE+SIZE*SIZE);
+	A_star_Node min_node;
+	min_node.x = 0;
+	min_node.y = 0;
+
+	A_star_Node max_node;
+	max_node.x = SIZE-1;
+	max_node.y = SIZE-1;
+
+	double start_distance = heuristic(min_node, max_node);
+
 	start_node.h = start_distance;
 
 	int iteration_counter = 0;
@@ -206,20 +231,44 @@ int A_star(int nStartX, int nStartY, int nGoalX, int nGoalY) {
 
 		for (iter = openSet.begin(); iter != openSet.end(); iter++) {
 			//cout << "checking f: " << iter->f << endl;
+//			if (iteration == 0) {
+//				current_node = *iter;
+//				min_f = iter->f;
+//				min_h = iter->h;
+//				iteration++;
+//			} else if ( iter->h < min_h ) {
+//				current_node = *iter;
+//				min_f = iter->f;
+//				min_h = iter->h;
+//			} else if (iter->f < min_f && iter->h == min_h) {
+//				current_node = *iter;
+//				min_h = iter->h;
+//				min_f = iter->f;
+//			}
+
 			if (iteration == 0) {
 				current_node = *iter;
 				min_f = iter->f;
+				min_h = iter->h;
 				iteration++;
 			} else if ( iter->f < min_f ) {
-				cout << "min_f = " << iter->f << endl;
 				current_node = *iter;
+				min_f = iter->f;
+				min_h = iter->h;
+			} else if (iter->h < min_h && iter->f == min_f) {
+				current_node = *iter;
+				min_h = iter->h;
 				min_f = iter->f;
 			}
 
-			if (iter->f == min_f && iter->h < min_h) {
-				current_node = *iter;
-				min_h = iter->h;
-			}
+//			if (iteration == 0) {
+//				current_node = *iter;
+//				min_f = iter->f;
+//				iteration++;
+//			} else if ( iter->f < min_f ) {
+//				current_node = *iter;
+//				min_f = iter->f;
+//			}
 		}
 
 		//getchar();
@@ -232,6 +281,7 @@ int A_star(int nStartX, int nStartY, int nGoalX, int nGoalY) {
 
 		//cout << "update screen" << endl;
 		configuration_space_colors.at(current_node.x).at(current_node.y).r = fmod(h/start_distance*255,255);
+		cout << "color: " << fmod(h/start_distance*255,255) << endl;
 		configuration_space_colors.at(current_node.x).at(current_node.y).g = fmod(h/start_distance*255,255);
 		configuration_space_colors.at(current_node.x).at(current_node.y).b = fmod(h/start_distance*255,255);
 		putpixel(surface, current_node.x, current_node.y, configuration_space_colors.at(current_node.x).at(current_node.y));
@@ -261,9 +311,9 @@ int A_star(int nStartX, int nStartY, int nGoalX, int nGoalY) {
 
 		cout << "current:" << current_node.x << ", " << current_node.y << endl;
 
-		configuration_space_colors.at(current_node.x).at(current_node.y).r = 0;
+		configuration_space_colors.at(current_node.x).at(current_node.y).r = 255;
 		configuration_space_colors.at(current_node.x).at(current_node.y).g = 0;
-		configuration_space_colors.at(current_node.x).at(current_node.y).b = 0;
+		configuration_space_colors.at(current_node.x).at(current_node.y).b = 255;
 		putpixel(surface, current_node.x, current_node.y, configuration_space_colors.at(current_node.x).at(current_node.y));
 		update();
 
@@ -290,6 +340,8 @@ int A_star(int nStartX, int nStartY, int nGoalX, int nGoalY) {
 }
 
 void expand_node(A_star_Node current_node, A_star_Node goal_node) {
+
+	randomizeNeighbors();
 
 	for (int i = 0; i < 8; i++) {
 		cout << "---" << endl;
@@ -354,10 +406,24 @@ void expand_node(A_star_Node current_node, A_star_Node goal_node) {
 }
 
 double heuristic(A_star_Node start, A_star_Node goal) {
+	// euclidian distance
 	return std::sqrt(pow(goal.x - start.x, 2.) + pow(goal.y - start.y, 2.));
+
+	// Manhattan distance
 	//return abs(goal.x - start.x)+abs(goal.y - start.y);
 
-	//return (std::sqrt(pow(goal.x - start.x, 2.) + pow(goal.y - start.y, 2.))+abs(goal.x - start.x)+abs(goal.y - start.y))/2.;
+	// diagonal distance
+	// http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html#speed-or-accuracy
+	//double dx = abs(start.x - goal.x);
+	//double dy = abs(start.y - goal.y);
+	// Chebyshev distance
+	//double D = 1;
+	//double D2 = 1;
+	// octile distance
+	//double D = 1;
+	//double D2 = std::sqrt(2);
+	//return D*(dx+dy)+(D2-2*D)*std::min(dx,dy);
+
 }
 
 int BFS(int nStartX, int nStartY, int nGoalX, int nGoalY) {
