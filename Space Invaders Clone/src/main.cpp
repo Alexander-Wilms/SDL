@@ -10,18 +10,23 @@
 
 using std::vector;
 
-int main(int, char**){
+int main(int, char**) {
 
 	// needs C++11
 	std::random_device rd;
 	std::mt19937 mt(rd());
-	std::uniform_real_distribution<double> dist(0, 2*M_PI);
+	std::uniform_real_distribution<double> dist(0, 50);
+	std::uniform_real_distribution<float> dist_0_1(0, 2);
+	std::uniform_real_distribution<float> dist_neg2_2(-2, 2);
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	SDL_Window* window = SDL_CreateWindow("Window title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 500, SDL_WINDOW_SHOWN);
+	SDL_Window* window = SDL_CreateWindow("Window title",
+			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 500,
+			SDL_WINDOW_SHOWN);
 
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED || SDL_RENDERER_PRESENTVSYNC);
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1,
+			SDL_RENDERER_ACCELERATED || SDL_RENDERER_PRESENTVSYNC);
 
 	// SDL_Surface* surface = SDL_LoadBMP("image.bmp");
 
@@ -45,7 +50,7 @@ int main(int, char**){
 	enemy.w = 50;
 	enemy.h = 50;
 
-	int x = 50, y = 500-100;
+	int x = 50, y = 500 - 100;
 
 	SDL_Event event;
 
@@ -69,7 +74,7 @@ int main(int, char**){
 
 	int frames_since_collision = 0;
 
-	while(running) {
+	while (running) {
 		SDL_Delay(5);
 
 		SDL_RenderClear(renderer);
@@ -77,12 +82,12 @@ int main(int, char**){
 		actor.x = x;
 		actor.y = y;
 
-		if(shooting == true) {
+		if (shooting == true) {
 			SDL_Rect bullet = SDL_Rect();
 			bullet.w = 10;
 			bullet.h = 10;
-			bullet.x = x+50;
-			bullet.y = 500-100;
+			bullet.x = x + 50;
+			bullet.y = 500 - 100;
 
 			bullet_vector.push_back(bullet);
 
@@ -96,34 +101,35 @@ int main(int, char**){
 		window_borders.w = 500;
 
 		// http://stackoverflow.com/questions/10957531/c-vector-iterator-erase-last-item-crash
-		for (std::vector<SDL_Rect>::iterator it = bullet_vector.begin() ; it != bullet_vector.end(); /* nothing */) {
+		for (std::vector<SDL_Rect>::iterator it = bullet_vector.begin();
+				it != bullet_vector.end(); /* nothing */) {
 			SDL_RenderCopy(renderer, texture, NULL, it.base());
 			it.base()->y--;
 
-			if(SDL_HasIntersection(&enemy, it.base()) == SDL_TRUE) {
+			if (SDL_HasIntersection(&enemy, it.base()) == SDL_TRUE) {
 				collided = true;
 				std::cout << "Hit!" << std::endl;
 			}
 
-			if(SDL_HasIntersection(&window_borders, it.base()) == SDL_FALSE) {
+			if (SDL_HasIntersection(&window_borders, it.base()) == SDL_FALSE) {
 				it = bullet_vector.erase(it);
 			} else {
 				it++;
 			}
 
-			std::cout << bullet_vector.size() << std::endl;
+			//std::cout << "No of bullets: " << bullet_vector.size() << std::endl;
 		}
 
-		if(!collided) {
-			if(enemy.x > 500-1-50) {
+		if (!collided) {
+			if (enemy.x > 500 - 1 - 50) {
 				enemyDir = false;
 			}
 
-			if(enemy.x < 0) {
+			if (enemy.x < 0) {
 				enemyDir = true;
 			}
 
-			if(enemyDir) {
+			if (enemyDir) {
 				enemyPos++;
 			} else {
 				enemyPos--;
@@ -134,61 +140,67 @@ int main(int, char**){
 
 		SDL_RenderCopy(renderer, texture, NULL, &actor);
 
-		if(!collided) {
+		if (!collided) {
 			SDL_RenderCopy(renderer, texture, NULL, &enemy);
 		} else {
-
+			static const Uint32 t_start = SDL_GetTicks();
 			frames_since_collision++;
 
-			SDL_Rect particle = SDL_Rect();
-			particle.w = 10;
-			particle.h = 10;
-			particle.x = enemy.x;
-			particle.y = enemy.y;
-
-			for(int i = 0; i <10; i++) {
-				particle_vector.push_back(particle);
-				particle_direction_vector.push_back(dist(mt));
+			if (!exploded) {
+				SDL_RenderCopy(renderer, texture, NULL, &enemy);
+				for (int i = 0; i < 10; i++) {
+					SDL_Rect particle = SDL_Rect();
+					particle.w = 10;
+					particle.h = 10;
+					particle.x = enemy.x + dist(mt);
+					particle.y = enemy.y + dist(mt);
+					particle_vector.push_back(particle);
+					particle_direction_vector.push_back((enemy.x+50-particle.x)/12.);
+					exploded = true;
+				}
 			}
 
-if(!exploded) {
-	vector<float>::iterator iter = particle_direction_vector.begin();
-				for (vector<SDL_Rect>::iterator it = particle_vector.begin() ; it != particle_vector.end(); /* nothing */) {
+			static int bla = 1;
 
-					it.base()->y = (int) ((float) it.base()->y +  sin((frames_since_collision)/120.*dist(mt)));
-					it.base()->x = (int) ((float) it.base()->x +  cos((frames_since_collision)/120.*dist(mt)));
+			vector<float>::iterator iter = particle_direction_vector.begin();
 
+
+
+				for (vector<SDL_Rect>::iterator it = particle_vector.begin();
+						it != particle_vector.end(); /* nothing */) {
 					SDL_RenderCopy(renderer, texture, NULL, it.base());
+					//it.base()->y += dist_0_1(mt);
+					int blo = t_start - SDL_GetTicks();
+					it.base()->y += (blo*blo)/50000.;
+					it.base()->x -= (int) iter.base()/2;
+					bla++;
+					//it.base()->x = (int) it.base()->x -dist_neg1_1(mt)/1000.*(t_start - SDL_GetTicks())/1000.;
 
-					if(frames_since_collision > 120) {
+					if (SDL_HasIntersection(&window_borders, it.base())
+							== SDL_FALSE) {
 						it = particle_vector.erase(it);
 						particle_direction_vector.erase(iter);
 					} else {
 						it++;
 						iter++;
 					}
-				}}
-
-if(particle_vector.size() == 0)
-	exploded = true;
-
-
+				}
 
 
 		}
 
 		SDL_RenderPresent(renderer);
 
-		if(moving) {
-			if(direction) {
+		if (moving) {
+			if (direction) {
 				x++;
 			} else {
 				x--;
 			}
 		}
 
-		while( SDL_PollEvent( &event ) ) {
-			if( event.type == SDL_QUIT ) {
+		while (SDL_PollEvent(&event)) {
+			if (event.type == SDL_QUIT) {
 				SDL_DestroyTexture(texture);
 
 				SDL_DestroyRenderer(renderer);
@@ -198,8 +210,8 @@ if(particle_vector.size() == 0)
 				SDL_Quit();
 
 				running = false;
-			} else if(event.type == SDL_KEYDOWN) {
-				switch(event.key.keysym.sym) {
+			} else if (event.type == SDL_KEYDOWN) {
+				switch (event.key.keysym.sym) {
 				case SDLK_RIGHT:
 					moving = true;
 					direction = true;
@@ -211,8 +223,8 @@ if(particle_vector.size() == 0)
 				case SDLK_SPACE:
 					shooting = true;
 				}
-			} else if(event.type == SDL_KEYUP) {
-				switch(event.key.keysym.sym) {
+			} else if (event.type == SDL_KEYUP) {
+				switch (event.key.keysym.sym) {
 				case SDLK_RIGHT:
 					moving = false;
 					break;
