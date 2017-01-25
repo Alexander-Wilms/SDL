@@ -28,7 +28,7 @@
 								<option id="gnu.cpp.compiler.option.dialect.std.60916641" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.other.other.123367651" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -lSDL2main -lSDL2 -lSDL2_image -std=c++11" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.include.paths.873055354" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;C:\MinGW\include\SDL2&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\mingw_dev_lib\include\SDL2&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.763814270" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -46,7 +46,7 @@
 									<listOptionValue builtIn="false" value="SDL2_image"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.328972733" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;C:\MinGW\include\SDL2&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\mingw_dev_lib\lib\SDL2&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1676322806" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
