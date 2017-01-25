@@ -9,15 +9,15 @@
 #include "Display.h"
 #include <complex>
 
-#define XSIZE 300*2
-#define YSIZE 200*2
+//#define XSIZE 300*2
+//#define YSIZE 200*2
 
 // Standard Mandelbrot set
 #define d 2
 // #define d 2.5
 
-//#define XSIZE 1600
-//#define YSIZE 900
+#define XSIZE 1600
+#define YSIZE 900
 
 using std::cout;
 using std::endl;
