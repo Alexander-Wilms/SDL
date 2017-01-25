@@ -4,7 +4,9 @@ public:
 	~Particle();
 	SDL_Rect* getRect();
 	void render();
+	bool isFaded();
 private:
+	bool faded;
 	float alpha;
 	float realx;
 	float realy;

@@ -33,32 +33,32 @@ int main(int, char**) {
 	int x, y;
 
 	particle_vector.push_back(
-			new Particle(renderer, 50, 100, 0.1, 0.1, screen_surface));
+			new Particle(renderer, 50, 100, 1, 1, screen_surface));
 	particle_vector.push_back(
-			new Particle(renderer, 50, 100, -0.1, 0.1, screen_surface));
+			new Particle(renderer, 50, 100, -1, 1, screen_surface));
 	particle_vector.push_back(
-			new Particle(renderer, 50, 100, 0.1, -0.1, screen_surface));
+			new Particle(renderer, 50, 100, 1, -1, screen_surface));
 	particle_vector.push_back(
-			new Particle(renderer, 50, 100, -0.1, -0.1, screen_surface));
+			new Particle(renderer, 50, 100, -1, -1, screen_surface));
 
 	SDL_Event event;
 	bool running = true;
 
 	Uint32 starttime = SDL_GetTicks();
 
-	int lastx, lasty;
+	int lastx = -1, lasty = -1;
 	while (running) {
 		SDL_GetMouseState(&x, &y);
 
 		if (SDL_GetTicks() - starttime > 2 && x != lastx && y != lasty) {
 			particle_vector.push_back(
-					new Particle(renderer, x, y, 0.1, 0.1, screen_surface));
+					new Particle(renderer, x, y, 1, 1, screen_surface));
 			particle_vector.push_back(
-					new Particle(renderer, x, y, -0.1, 0.1, screen_surface));
+					new Particle(renderer, x, y, 1, 1, screen_surface));
 			particle_vector.push_back(
-					new Particle(renderer, x, y, 0.1, -0., screen_surface));
+					new Particle(renderer, x, y, 1, -0., screen_surface));
 			particle_vector.push_back(
-					new Particle(renderer, x, y, -0.1, -0.1, screen_surface));
+					new Particle(renderer, x, y, -1, -1, screen_surface));
 		}
 
 		lastx = x;
@@ -70,7 +70,7 @@ int main(int, char**) {
 			(*iter)->render();
 
 			if (SDL_HasIntersection(&window_borders, (*iter)->getRect())
-					== SDL_FALSE) {
+					== SDL_FALSE || (*iter)->isFaded()) {
 				iter = particle_vector.erase(iter);
 			} else {
 				iter++;

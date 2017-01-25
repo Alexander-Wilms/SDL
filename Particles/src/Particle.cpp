@@ -21,6 +21,7 @@ Particle::Particle(SDL_Renderer* renderer, int x, int y, double x_velocity,
 	this->y_velocity = y_velocity;
 	timestamp_creation = SDL_GetTicks();
 	alpha = 255;
+	faded = false;
 }
 
 Particle::~Particle() {
@@ -34,15 +35,22 @@ void Particle::render() {
 	realy = realy + delta_t / 1000 * y_velocity;
 
 	SDL_SetTextureAlphaMod(texture, (Uint8) alpha);
-	if (alpha >= 4)
-		alpha -= 4;
-	else
+
+	if (alpha >= 2) {
+		alpha -= 2;
+	} else {
 		alpha = 0;
+		faded = true;
+	}
 
 	rect.x = (int) realx;
 	rect.y = (int) realy;
 
 	SDL_RenderCopy(renderer, texture, NULL, &rect);
+}
+
+bool Particle::isFaded() {
+	return faded;
 }
 
 SDL_Rect* Particle::getRect() {
