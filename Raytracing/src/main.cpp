@@ -66,6 +66,9 @@ int main(int argc, char *argv[]) {
 
 SDL_Color cast_ray(double x, double y) {
 	SDL_Color returnvalue;
+	returnvalue.r = 0;
+	returnvalue.g = 0;
+	returnvalue.b = 0;
 
 	Vector3d va(x, y, 0);
 	Vector3d vb(x, y, 1);
@@ -94,10 +97,10 @@ SDL_Color cast_ray(double x, double y) {
 	}
 
 	Vector3d center_of_sphere(50,50,50);
-	if(ray.distance(center_of_sphere) < 20) {
-		returnvalue.r += 10;
-		returnvalue.g += 10;
-		returnvalue.b += 10;
+	if(ray.distance(center_of_sphere) < (double) 20) {
+		returnvalue.r = 0;
+		returnvalue.g = 0;
+		returnvalue.b = 0;
 	}
 
 	return returnvalue;
