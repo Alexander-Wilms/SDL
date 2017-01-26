@@ -77,30 +77,39 @@ SDL_Color cast_ray(double x, double y) {
 	Vector3d plane1_distance = ray.intersectionPoint(plane1);
 	Vector3d plane2_distance = ray.intersectionPoint(plane2);
 
-
-
-
 	double* plane1_d = &plane1_distance(2);
 	double* plane2_d = &plane2_distance(2);
 
-	cout << "plane1: " << *plane1_d << endl;
-	cout << "plane2: " << *plane2_d << endl;
+	//cout << "plane1: " << *plane1_d << endl;
+	//cout << "plane2: " << *plane2_d << endl;
 
 	if (*plane1_d < *plane2_d) {
 		returnvalue.r = *plane1_d;
-		cout << *plane1_d << endl;
-		cout << returnvalue.r << endl;
+		//cout << *plane1_d << endl;
+		//cout << returnvalue.r << endl;
 	} else {
 		returnvalue.g = *plane2_d;
-		cout << *plane2_d << endl;
-		cout << returnvalue.g << endl;
+		//cout << *plane2_d << endl;
+		//cout << returnvalue.g << endl;
 	}
 
-	Vector3d center_of_sphere(50,50,50);
-	if(ray.distance(center_of_sphere) < (double) 20) {
-		returnvalue.r = 0;
-		returnvalue.g = 0;
-		returnvalue.b = 0;
+	double x0 = 50;
+	double y0 = 50;
+	double z0 = 50;
+	double r = 50;
+
+	Vector3d center_of_sphere(x0, y0, z0);
+	Vector3d raypoint;
+	int t = 0;
+
+
+
+	if (ray.distance(center_of_sphere) < r) {
+		double z = sqrt(pow(r,2)-pow((x-x0),2)-pow((y-y0),2))+z0;
+		cout << "ray hits sphere: " << z << endl;
+		returnvalue.r = z;
+		returnvalue.g = z;
+		returnvalue.b = z;
 	}
 
 	return returnvalue;
