@@ -1,13 +1,10 @@
 // https://forum.kde.org/viewtopic.php?f=74&t=94694
 
-#define SIZE 100
+#define XSIZE 150
+#define YSIZE 150
 #define EIGEN_DONT_VECTORIZE
 #define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
 
-#include <Eigen/src/Core/Matrix.h>
-#include <Eigen/src/Geometry/Hyperplane.h>
-#include <Eigen/src/Geometry/ParametrizedLine.h>
-#include <SDL_main.h>
 #include <iostream>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
@@ -17,25 +14,52 @@
 
 using namespace Eigen;
 using std::cout;
+using std::cin;
 using std::endl;
 using std::vector;
 
-Display display(SIZE, SIZE);
+Display display(XSIZE, YSIZE);
 
-vector<vector<double>> data(SIZE, vector<double>(SIZE));
+vector<vector<double>> data(XSIZE, vector<double>(YSIZE));
+
+Hyperplane<double, 3> plane;
+
+double getDepth(int x, int y);
 
 int main(int argc, char *argv[]) {
-	Vector3d vz(0, 0, 2);
-	Vector3d v0(0, 0, 0);
-	ParametrizedLine<double, 3> line = ParametrizedLine<double, 3>::Through(vz, v0);
 
-	Vector3d vx(1, 0, 0);
-	Vector3d vy(0, 1, 0);
-	Hyperplane<double, 3> plane = Hyperplane<double, 3>::Through(v0, vx, vy);
+	Vector3d vb(0, 0, 0);
+	Vector3d vc(1, 0, 0);
+	Vector3d vd(0, 1, 1);
+	plane = Hyperplane<double, 3>::Through(vb, vc, vd);
 
-	double intersection_parameter = line.intersection(plane);
+	for (int x = 0; x < XSIZE; x++) {
+		for (int y = 0; y < YSIZE; y++) {
 
-	cout << intersection_parameter << endl;
+			data[x][y] = getDepth(x,y);
+		}
+	}
+
+	display.setdata(data);
+
+	display.updateGraphics();
+
+	SDL_Event event;
+
+	while (true) {
+		SDL_PollEvent(&event);
+		if (event.type == SDL_QUIT) {
+			break;
+		}
+	}
 
 	return 0;
+}
+
+double getDepth(int x, int y) {
+	Vector3d va(x, y, 0);
+	Vector3d vb(x, y, 1);
+	ParametrizedLine<double, 3> line = ParametrizedLine<double, 3>::Through(va, vb);
+
+	return line.intersection(plane);
 }
