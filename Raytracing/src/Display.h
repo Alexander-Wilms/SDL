@@ -15,7 +15,7 @@ using std::vector;
 
 class Display {
 private:
-	vector<vector<double>> data;
+	vector<vector<SDL_Color>> data;
 	SDL_Rect* rect;
 	SDL_Renderer* renderer;
 	SDL_Window* window;
@@ -25,7 +25,7 @@ private:
 public:
 	Display(int, int);
 	virtual ~Display();
-	void setdata(vector<vector<double>> array);
+	void setdata(vector<vector<SDL_Color>> array);
 	void updateGraphics();
 };
 

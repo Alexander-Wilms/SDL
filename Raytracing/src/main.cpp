@@ -20,18 +20,18 @@ using std::vector;
 
 Display display(XSIZE, YSIZE);
 
-vector<vector<double>> data(XSIZE, vector<double>(YSIZE));
+vector<vector<SDL_Color>> data(XSIZE, vector<SDL_Color>(YSIZE));
 
 Hyperplane<double, 3> plane1;
 Hyperplane<double, 3> plane2;
 
-int getDepth(double x, double y);
+SDL_Color cast_ray(double x, double y);
 
 int main(int argc, char *argv[]) {
 
-	Vector3d vb(0, 0, 150);
-	Vector3d vc(1, 0, 150);
-	Vector3d vd(0, 1, 150);
+	Vector3d vb(0, 0, 100);
+	Vector3d vc(1, 0, 100);
+	Vector3d vd(0, 1, 100);
 
 	Vector3d ve(1, 0, 3);
 	Vector3d vf(0, 1, 3);
@@ -41,12 +41,10 @@ int main(int argc, char *argv[]) {
 
 	plane2 = Hyperplane<double, 3>::Through(ve, vf, vg);
 
-	double max = 0;
-
 	for (int x = 0; x < XSIZE; x++) {
 		for (int y = 0; y < YSIZE; y++) {
 
-			data[x][y] = getDepth(x, y);
+			data[x][y] = cast_ray(x, y);
 		}
 	}
 
@@ -66,12 +64,12 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
-int getDepth(double x, double y) {
+SDL_Color cast_ray(double x, double y) {
+	SDL_Color returnvalue;
+
 	Vector3d va(x, y, 0);
 	Vector3d vb(x, y, 1);
 	ParametrizedLine<double, 3> line = ParametrizedLine<double, 3>::Through(va, vb);
-
-	int returnvalue;
 
 	Vector3d plane1_distance = line.intersectionPoint(plane1);
 	Vector3d plane2_distance = line.intersectionPoint(plane2);
@@ -82,17 +80,15 @@ int getDepth(double x, double y) {
 	cout << "plane1: " << *plane1_d << endl;
 	cout << "plane2: " << *plane2_d << endl;
 
-	if(*plane1_d < *plane2_d) {
-		returnvalue = *plane1_d;
+	if (*plane1_d < *plane2_d) {
+		returnvalue.r = *plane1_d;
 		cout << *plane1_d << endl;
-		cout << returnvalue << endl;
+		cout << returnvalue.r << endl;
 	} else {
-		returnvalue = *plane2_d;
+		returnvalue.g = *plane2_d;
 		cout << *plane2_d << endl;
-		cout << returnvalue << endl;
+		cout << returnvalue.g << endl;
 	}
-
-
 
 	return returnvalue;
 }

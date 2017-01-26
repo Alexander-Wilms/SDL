@@ -44,18 +44,17 @@ Display::Display(int XSIZE, int YSIZE) {
 	ysize = YSIZE;
 }
 
-void Display::setdata(vector<vector<double>> array) {
+void Display::setdata(vector<vector<SDL_Color>> array) {
 	data = array;
 }
 
 void Display::updateGraphics() {
-	SDL_Color color;
 	for (int i = 0; i < xsize; i++) {
 		for (int j = 0; j < ysize; j++) {
 			rect->x = i;
 			rect->y = j;
 			// greyscale
-			 SDL_SetRenderDrawColor(renderer, data[i][j], data[i][j], data[i][j],
+			 SDL_SetRenderDrawColor(renderer, data[i][j].r, data[i][j].g, data[i][j].b,
 				255);
 
 			// rainbow
