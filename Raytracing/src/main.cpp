@@ -69,10 +69,13 @@ SDL_Color cast_ray(double x, double y) {
 
 	Vector3d va(x, y, 0);
 	Vector3d vb(x, y, 1);
-	ParametrizedLine<double, 3> line = ParametrizedLine<double, 3>::Through(va, vb);
+	ParametrizedLine<double, 3> ray = ParametrizedLine<double, 3>::Through(va, vb);
 
-	Vector3d plane1_distance = line.intersectionPoint(plane1);
-	Vector3d plane2_distance = line.intersectionPoint(plane2);
+	Vector3d plane1_distance = ray.intersectionPoint(plane1);
+	Vector3d plane2_distance = ray.intersectionPoint(plane2);
+
+
+
 
 	double* plane1_d = &plane1_distance(2);
 	double* plane2_d = &plane2_distance(2);
@@ -88,6 +91,13 @@ SDL_Color cast_ray(double x, double y) {
 		returnvalue.g = *plane2_d;
 		cout << *plane2_d << endl;
 		cout << returnvalue.g << endl;
+	}
+
+	Vector3d center_of_sphere(50,50,50);
+	if(ray.distance(center_of_sphere) < 20) {
+		returnvalue.r += 10;
+		returnvalue.g += 10;
+		returnvalue.b += 10;
 	}
 
 	return returnvalue;
