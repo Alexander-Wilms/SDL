@@ -1,0 +1,7 @@
+[
+  {
+    "directory": "/home/awilms/SDL/2D Pathfinding/data",
+    "command": "c++  '-Ihelloflatpaksdl2@exe' '-I.' '-I..' '-I/usr/include/SDL2' '-fdiagnostics-color=always' '-pipe' '-Wall' '-Winvalid-pch' '-Wnon-virtual-dtor' '-O0' '-g' '-D_REENTRANT' '-MMD' '-MQ' 'helloflatpaksdl2@exe/src_main.cpp.o' '-MF' 'helloflatpaksdl2@exe/src_main.cpp.o.d' -o 'helloflatpaksdl2@exe/src_main.cpp.o' -c ../src/main.cpp",
+    "file": "../src/main.cpp"
+  }
+]

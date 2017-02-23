@@ -1,0 +1,26 @@
+Build started at 2017-02-23T20:14:14.977466
+Python binary: /usr/bin/python3
+Python system: Linux
+The Meson build system
+Version: 0.38.1
+Source dir: /home/awilms/SDL/2D Pathfinding
+Build dir: /home/awilms/SDL/2D Pathfinding/data
+Build type: native build
+Project name: helloflatpaksdl2
+Sanity testing cpp compiler: c++
+Is cross compiler: False.
+Sanity check compiler command line: c++ /home/awilms/SDL/2D Pathfinding/data/meson-private/sanitycheckcpp.cc -o /home/awilms/SDL/2D Pathfinding/data/meson-private/sanitycheckcpp.exe
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+Running test binary command: /home/awilms/SDL/2D Pathfinding/data/meson-private/sanitycheckcpp.exe
+Native cpp compiler: c++ (gcc 6.3.1)
+Build machine cpu family: x86_64
+Build machine cpu: x86_64
+Found pkg-config: /usr/bin/pkg-config (0.29.1)
+Determining dependency 'sdl2' with pkg-config executable '/usr/bin/pkg-config'
+Native dependency sdl2 found: YES 2.0.5
+Build targets in project: 2

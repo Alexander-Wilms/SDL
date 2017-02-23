@@ -172,7 +172,7 @@ int main(int, char**) {
 					//it.base()->y += dist_0_1(mt);
 					int blo = t_start - SDL_GetTicks();
 					it.base()->y += (blo*blo)/50000.;
-					it.base()->x -= (int) iter.base()/2;
+					it.base()->x -= (int) *iter.base()/2;
 					bla++;
 					//it.base()->x = (int) it.base()->x -dist_neg1_1(mt)/1000.*(t_start - SDL_GetTicks())/1000.;
 

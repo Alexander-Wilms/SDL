@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <SDL.h>
-#include "SDL_image.h"
 
 int main(int, char**){
 
@@ -18,7 +17,7 @@ int main(int, char**){
 
 	SDL_SetRenderDrawColor(renderer,37,72,92,120);
 
-	SDL_Rect* rect;
+	SDL_Rect* rect = new SDL_Rect;
 
 	rect->w = 1;
 	rect->h = 1;

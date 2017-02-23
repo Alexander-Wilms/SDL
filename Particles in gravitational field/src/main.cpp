@@ -88,7 +88,6 @@ int main(int, char**) {
 
 			if (SDL_HasIntersection(&window_borders, (*iter)->getRect())
 					== SDL_FALSE || (*iter)->isFaded()) {
-				delete &iter.base();
 				iter = particle_vector.erase(iter);
 			} else {
 				iter++;

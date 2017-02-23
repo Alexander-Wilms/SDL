@@ -181,7 +181,6 @@ int A_star(int nStartX, int nStartY, int nGoalX, int nGoalY) {
 	start_node.f = 0;
 	start_node.g = 0;
 
-
 	cout << start_node.x << endl;
 	cout << start_node.y << endl;
 
@@ -449,14 +448,14 @@ int BFS(int nStartX, int nStartY, int nGoalX, int nGoalY) {
 	cout << "Die Suche dauerte: " << dwElapsed << "ms" << endl;
 	cout << "Pfad gefunden: " << bFound << endl;
 
-	// Überprüfen, ob ein Pfad gefunden wurde
+	// Ã¼berprÃ¼fen, ob ein Pfad gefunden wurde
 	if (bFound) {
 		//update();
 		//FILE *fp = fopen("path.prg", "w");
 		//if (fp != NULL)
 		//fp = stdout;
 
-		// Den Pfad vom Ziel zum Start zurückgehen und den Pfad markieren
+		// Den Pfad vom Ziel zum Start zurÃ¼ckgehen und den Pfad markieren
 		x = nGoalX;
 		y = nGoalY;
 
@@ -473,9 +472,9 @@ int BFS(int nStartX, int nStartY, int nGoalX, int nGoalY) {
 
 			//cout << "LastX: " << configurations_space_bfs_cells.at(x).at(y).nLastX << endl;
 			// EASY-ROB Programm erzeugen
-			// Die Gelenkwerte müssen entsprechend den Zellen angepasst werden!!!
+			// Die Gelenkwerte mÃ¼ssen entsprechend den Zellen angepasst werden!!!
 			//fprintf(fp, "JUMP_TO_AX %f %f\n", (x - width / 2) * 0.002f, (y - height / 2) * 0.002f); // von -1m bis +1m in 20mm Schritten
-			//fprintf(fp, "JUMP_TO_AX %f %f\n", x - width/2.0f, y - width/2.0f); // von -180° bis +180° in 1° Schritten
+			//fprintf(fp, "JUMP_TO_AX %f %f\n", x - width/2.0f, y - width/2.0f); // von -180Â° bis +180Â° in 1Â° Schritten
 			// Schwarzen Pixel setzen
 			configuration_space_colors.at(x).at(y).r = 0;
 			configuration_space_colors.at(x).at(y).g = 0;
@@ -513,6 +512,11 @@ void init() {
 	SDL_Init(SDL_INIT_VIDEO);
 
 	surface = SDL_LoadBMP("cspace.bmp");
+
+	if(surface == NULL) {
+		cout << "Could not load bitmap"	<< endl;
+		exit(0);
+	}
 
 	window = SDL_CreateWindow("2D Pathfinding", SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED, surface->w, surface->h, SDL_WINDOW_SHOWN);
@@ -656,10 +660,10 @@ bool breadth_first_search(int nStartX, int nStartY, int nGoalX, int nGoalY) {
 
 /*
  *  ClearCells()
- *  Setzt alle Zellen auf die Initialwerte zurück
+ *  Setzt alle Zellen auf die Initialwerte zurÃ¼ck
  */
 void ClearCells() {
-	// Zellen zurücksetzen
+	// Zellen zurÃ¼cksetzen
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
 			configuration_space_bfs_cells.at(x).at(y).bMarked = false;   // Nicht besucht
