@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <SDL.h>
-#include "SDL_image.h"
+#include <SDL_image.h>
 
 int main(int, char**){
 
@@ -16,7 +16,7 @@ int main(int, char**){
 
 	SDL_Surface* surface = SDL_GetWindowSurface(window);
 
-	SDL_Rect* rect;
+        SDL_Rect* rect = new SDL_Rect;
 
 	rect->x = 100;
 	rect->y = 200;
