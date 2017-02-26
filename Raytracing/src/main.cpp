@@ -34,19 +34,24 @@ int main(int argc, char *argv[]) {
 	Vector3d vc(1, 0, 100);
 	Vector3d vd(0, 1, 100);
 
-	Vector3d ve(1, 0, 3);
-	Vector3d vf(0, 1, 3);
-	Vector3d vg(0, 0, 2);
+//	Vector3d ve(1, 0, 3);
+//	Vector3d vf(0, 1, 3);
+//	Vector3d vg(0, 0, 2);
 
-	Vector3d vh(1,0,0);
-	Vector3d vi(0,0,0);
-	Vector3d vj(0,1,0);
+	Vector3d ve(0, 0, 50);
+	Vector3d vf(500, 0, 100);
+	Vector3d vg(0, 500, 100);
+
+
+//	Vector3d vh(1,0,0);
+//	Vector3d vi(0,0,0);
+//	Vector3d vj(0,1,0);
 
 	plane1 = Hyperplane<double, 3>::Through(vb, vc, vd);
 
 	plane2 = Hyperplane<double, 3>::Through(ve, vf, vg);
 
-	lighting = Hyperplane<double, 3>::Through(vh, vi, vj);
+//	lighting = Hyperplane<double, 3>::Through(vh, vi, vj);
 
 	for (int x = 0; x < XSIZE; x++) {
 		for (int y = 0; y < YSIZE; y++) {
@@ -92,36 +97,29 @@ SDL_Color cast_ray(double x, double y) {
 
 	if (*plane1_d < *plane2_d) {
 		returnvalue.r = *plane1_d;
+		//returnvalue.g = *plane1_d;
 		//cout << *plane1_d << endl;
 		//cout << returnvalue.r << endl;
 	} else {
 		returnvalue.g = *plane2_d;
+		returnvalue.b = *plane2_d;
 		//cout << *plane2_d << endl;
 		//cout << returnvalue.g << endl;
 	}
 
-	double x0 = 50;
-	double y0 = 50;
-	double z0 = 50;
-	double r = 50;
+	double x0 = 250;
+	double y0 = 250;
+	double z0 = 100;
+	double r = 90;
 
 	Vector3d center_of_sphere(x0, y0, z0);
 	Vector3d raypoint;
-	int t = 0;
 
 	if (ray.distance(center_of_sphere) < r) {
-		double z = sqrt(pow(r,2)-pow((x-x0),2)-pow((y-y0),2))+z0;
-		cout << "ray hits sphere: " << z << endl;
-		returnvalue.r = z*2;
-		returnvalue.g = z*2;
-		returnvalue.b = z*2;
-
-		Vector3d hitpoint(x,y,z);
-		Vector3d n(-y/x,-x/y,-1);
-		// http://140.129.20.249/~jmchen/cg/docs/rendering%20pipeline/rendering/light_specular.html
-		Vector3d vray = va -vb;
-		//Vector3d direction = (2*vray.dot(vray.dot(n)))-n;
-		//cout << "direction: " << direction << endl;
+		double z = sqrt(pow(r,2.)-pow((x-x0),2.)-pow((y-y0),2.))+z0;
+		returnvalue.r = z;
+		returnvalue.g = 0;
+		returnvalue.b = z;
 	}
 
 	return returnvalue;
