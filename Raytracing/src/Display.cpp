@@ -22,8 +22,8 @@ Display::Display(int XSIZE, int YSIZE) {
 	SDL_Init(SDL_INIT_VIDEO);
 
 	// https://wiki.libsdl.org/SDL_GLattr#multisample
-	//SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-	//SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
 	window = SDL_CreateWindow("Raytracing", SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED, XSIZE, YSIZE, SDL_WINDOW_SHOWN);

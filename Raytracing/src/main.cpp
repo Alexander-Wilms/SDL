@@ -1,7 +1,7 @@
 // https://forum.kde.org/viewtopic.php?f=74&t=94694
 
-#define XSIZE 100
-#define YSIZE 100
+#define XSIZE 500
+#define YSIZE 500
 #define EIGEN_DONT_VECTORIZE
 #define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
 
@@ -24,6 +24,7 @@ vector<vector<SDL_Color>> data(XSIZE, vector<SDL_Color>(YSIZE));
 
 Hyperplane<double, 3> plane1;
 Hyperplane<double, 3> plane2;
+Hyperplane<double, 3> lighting;
 
 SDL_Color cast_ray(double x, double y);
 
@@ -37,9 +38,15 @@ int main(int argc, char *argv[]) {
 	Vector3d vf(0, 1, 3);
 	Vector3d vg(0, 0, 2);
 
+	Vector3d vh(1,0,0);
+	Vector3d vi(0,0,0);
+	Vector3d vj(0,1,0);
+
 	plane1 = Hyperplane<double, 3>::Through(vb, vc, vd);
 
 	plane2 = Hyperplane<double, 3>::Through(ve, vf, vg);
+
+	lighting = Hyperplane<double, 3>::Through(vh, vi, vj);
 
 	for (int x = 0; x < XSIZE; x++) {
 		for (int y = 0; y < YSIZE; y++) {
@@ -102,14 +109,19 @@ SDL_Color cast_ray(double x, double y) {
 	Vector3d raypoint;
 	int t = 0;
 
-
-
 	if (ray.distance(center_of_sphere) < r) {
 		double z = sqrt(pow(r,2)-pow((x-x0),2)-pow((y-y0),2))+z0;
 		cout << "ray hits sphere: " << z << endl;
-		returnvalue.r = z;
-		returnvalue.g = z;
-		returnvalue.b = z;
+		returnvalue.r = z*2;
+		returnvalue.g = z*2;
+		returnvalue.b = z*2;
+
+		Vector3d hitpoint(x,y,z);
+		Vector3d n(-y/x,-x/y,-1);
+		// http://140.129.20.249/~jmchen/cg/docs/rendering%20pipeline/rendering/light_specular.html
+		Vector3d vray = va -vb;
+		//Vector3d direction = (2*vray.dot(vray.dot(n)))-n;
+		//cout << "direction: " << direction << endl;
 	}
 
 	return returnvalue;
