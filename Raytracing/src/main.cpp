@@ -11,6 +11,7 @@
 #include <SDL.h>
 #include "Display.h"
 #include <vector>
+#include <limits>
 
 using namespace Eigen;
 using std::cout;
@@ -82,44 +83,74 @@ SDL_Color cast_ray(double x, double y) {
 	returnvalue.g = 0;
 	returnvalue.b = 0;
 
+	double nearest_so_far = std::numeric_limits<double>::infinity();
+
 	Vector3d va(x, y, 0);
 	Vector3d vb(x, y, 1);
 	ParametrizedLine<double, 3> ray = ParametrizedLine<double, 3>::Through(va, vb);
 
 	Vector3d plane1_distance = ray.intersectionPoint(plane1);
-	Vector3d plane2_distance = ray.intersectionPoint(plane2);
-
 	double* plane1_d = &plane1_distance(2);
-	double* plane2_d = &plane2_distance(2);
-
-	//cout << "plane1: " << *plane1_d << endl;
-	//cout << "plane2: " << *plane2_d << endl;
-
-	if (*plane1_d < *plane2_d) {
+	if(*plane1_d < nearest_so_far) {
+		nearest_so_far = *plane1_d;
 		returnvalue.r = *plane1_d;
-		//returnvalue.g = *plane1_d;
-		//cout << *plane1_d << endl;
-		//cout << returnvalue.r << endl;
-	} else {
+		returnvalue.g = 0;
+		returnvalue.b = 0;
+	}
+
+	Vector3d plane2_distance = ray.intersectionPoint(plane2);
+	double* plane2_d = &plane2_distance(2);
+	if(*plane2_d < nearest_so_far) {
+		nearest_so_far = *plane2_d;
+		returnvalue.r = 0;
 		returnvalue.g = *plane2_d;
 		returnvalue.b = *plane2_d;
-		//cout << *plane2_d << endl;
-		//cout << returnvalue.g << endl;
 	}
 
 	double x0 = 250;
 	double y0 = 250;
-	double z0 = 100;
-	double r = 90;
+	double z0 = 50;
+	double r = 50;
 
 	Vector3d center_of_sphere(x0, y0, z0);
-	Vector3d raypoint;
 
 	if (ray.distance(center_of_sphere) < r) {
+		// The Cartesian equation of a sphere centered at the point (x_0,y_0,z_0) with radius R
+		// solved for z
 		double z = sqrt(pow(r,2.)-pow((x-x0),2.)-pow((y-y0),2.))+z0;
+		z = z0-z;
+		cout << "near: " << nearest_so_far << endl;
+		cout << "z: " << z << endl << endl;
+
+		if(z < nearest_so_far) {
+			nearest_so_far = z;
 		returnvalue.r = z;
 		returnvalue.g = 0;
 		returnvalue.b = z;
+		}
+	}
+
+	x0 = 180;
+	y0 = 180;
+	z0 = 150;
+	r = 100;
+
+	center_of_sphere(0) = x0;
+	center_of_sphere(1) = y0;
+	center_of_sphere(2) = z0;
+
+	if (ray.distance(center_of_sphere) < r) {
+		// The Cartesian equation of a sphere centered at the point (x_0,y_0,z_0) with radius R
+		// solved for z
+		double z = sqrt(pow(r,2.)-pow((x-x0),2.)-pow((y-y0),2.))+z0;
+		z = z0-z;
+
+		if(z < nearest_so_far) {
+			nearest_so_far = z;
+		returnvalue.r = z;
+		returnvalue.g = z;
+		returnvalue.b = z;
+		}
 	}
 
 	return returnvalue;
