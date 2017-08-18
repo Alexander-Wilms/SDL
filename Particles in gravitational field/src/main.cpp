@@ -13,7 +13,7 @@
 
 using std::vector;
 
-#define CENTERMASS 100
+#define CENTERMASS 1.
 
 int main(int, char**) {
 
@@ -30,38 +30,37 @@ int main(int, char**) {
 
 	SDL_Surface* screen_surface = SDL_GetWindowSurface(window);
 
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1,
-			SDL_RENDERER_ACCELERATED || SDL_RENDERER_PRESENTVSYNC);
-
-
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED || SDL_RENDERER_PRESENTVSYNC);
 
 	vector<Particle*> particle_vector;
 
 	SDL_Event event;
+
 	bool running = true;
 
-	Uint32 starttime = SDL_GetTicks();
+	Uint32 ticks_at_last_particle_spawn = SDL_GetTicks();
 
 	srand(time(NULL));
 
-	float density = 100;
+	float density = 1;
 
 	bool done = false;
 
 	while (running) {
+		// spawn a new particle roughly every 100 ms
+		if (SDL_GetTicks() - ticks_at_last_particle_spawn > 100) {
+			ticks_at_last_particle_spawn = SDL_GetTicks();
 
-		if (SDL_GetTicks() - starttime > 100) {
-			//done = true;
-			starttime = SDL_GetTicks();
-
+			// choose a random position where to spawn the particle
+			// +-----→ x
+			// |
+			// |
+			// ↓ y
 			int x = rand()%500;
 			int y = rand()%500;
 
-			//x = 0;
-			//y = 0;
-
-			int size = rand()%50;
-			int mass = 100;//density * pow(size,2);
+			int size = rand()%20;
+			int mass = density * pow(size,2);
 
 			float xvel = 50. / (rand()%10);
 			if(rand()%2)
@@ -71,23 +70,18 @@ int main(int, char**) {
 			if(rand()%2)
 				yvel *= -1;
 
+			xvel = 0;
+			yvel = 0;
 
-
-			particle_vector.push_back(
-					new Particle(renderer, x, y, xvel,
-							yvel, screen_surface, mass, CENTERMASS, size));
-
-
-
+			particle_vector.push_back(new Particle(renderer, x, y, xvel, yvel, screen_surface, mass, CENTERMASS, size));
 		}
 
-		for (vector<Particle*>::iterator iter = particle_vector.begin();
-				iter != particle_vector.end();
-				/* nothing */) {
+		for (vector<Particle*>::iterator iter = particle_vector.begin(); iter != particle_vector.end();/*nothing*/) {
+			// render particle
 			(*iter)->render();
 
-			if (SDL_HasIntersection(&window_borders, (*iter)->getRect())
-					== SDL_FALSE || (*iter)->isFaded()) {
+			// check whether the particle is still within the window or still visible; if not, remove it
+			if (SDL_HasIntersection(&window_borders, (*iter)->getRect()) == SDL_FALSE || (*iter)->isFaded()) {
 				iter = particle_vector.erase(iter);
 			} else {
 				iter++;
@@ -100,13 +94,9 @@ int main(int, char**) {
 
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
-
 				SDL_DestroyRenderer(renderer);
-
 				SDL_DestroyWindow(window);
-
 				SDL_Quit();
-
 				running = false;
 			}
 		}

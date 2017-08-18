@@ -13,10 +13,6 @@ public:
 		double CenterMass;
 		bool faded;
 		double alpha;
-		double realx;
-		double realy;
-		double startrealx;
-		double startrealy;
 		Uint32 timestamp_creation;
 		SDL_Surface* surface;
 		SDL_Surface* screen_surface;
@@ -29,8 +25,7 @@ public:
 		double r;
 		double F;
 		double a;
-		double gravalpha;
+		double angle_of_acting_force;
 		double ax;
 		double ay;
-	}
-	;
+	};
